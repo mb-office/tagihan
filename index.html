@@ -435,4 +435,504 @@
     function renderFolderTree() {
         const treeView = document.getElementById("folderTreeView");
         if(!treeView) return;
-        treeView.innerHTML = `<div class="tree-item ${window.currentFolderId
+        treeView.innerHTML = `<div class="tree-item ${window.currentFolderId === 'root' ? 'active' : ''}" onclick="pindahFolder('root')">💻 My Cloud Database (C:)</div>`;
+        
+        const rootChildrenContainer = document.createElement("div");
+        rootChildrenContainer.className = "tree-children";
+        
+        for (let fId in window.EXPLORER_DATA.folders) {
+            if (window.EXPLORER_DATA.folders[fId].parent === "root") {
+                buildTreeRow(fId, rootChildrenContainer);
+            }
+        }
+        treeView.appendChild(rootChildrenContainer);
+    }
+
+    function buildTreeRow(folderId, containerEl) {
+        const folder = window.EXPLORER_DATA.folders[folderId];
+        const row = document.createElement("div");
+        row.className = `tree-item ${window.currentFolderId === folderId ? 'active' : ''}`;
+        row.innerHTML = `📁 ${folder.name}`;
+        row.onclick = (e) => {
+            e.stopPropagation();
+            pindahFolder(folderId);
+        };
+        containerEl.appendChild(row);
+
+        const childrenContainer = document.createElement("div");
+        childrenContainer.className = "tree-children";
+        for (let fId in window.EXPLORER_DATA.folders) {
+            if (window.EXPLORER_DATA.folders[fId].parent === folderId) {
+                buildTreeRow(fId, childrenContainer);
+            }
+        }
+        containerEl.appendChild(childrenContainer);
+    }
+
+    function renderFileGrid() {
+        const gridView = document.getElementById("fileGridView");
+        const overlay = document.getElementById("tableEditorOverlay");
+        gridView.innerHTML = "";
+        gridView.appendChild(overlay);
+
+        let count = 0;
+
+        for (let fId in window.EXPLORER_DATA.folders) {
+            if (window.EXPLORER_DATA.folders[fId].parent === window.currentFolderId) {
+                count++;
+                const item = document.createElement("div");
+                item.className = `explorer-item ${window.selectedItemId === 'dir_' + fId ? 'selected' : ''}`;
+                if (window.clipboardItemId === 'dir_' + fId) item.style.opacity = "0.5";
+
+                item.innerHTML = `<div class="item-icon">📁</div><div class="item-name">${window.EXPLORER_DATA.folders[fId].name}</div>`;
+                item.onclick = (e) => { e.stopPropagation(); selectItem('dir_' + fId); };
+                item.ondblclick = () => { pindahFolder(fId); };
+                gridView.appendChild(item);
+            }
+        }
+
+        for (let fileId in window.EXPLORER_DATA.files) {
+            if (window.EXPLORER_DATA.files[fileId].folderId === window.currentFolderId) {
+                count++;
+                const item = document.createElement("div");
+                item.className = `explorer-item ${window.selectedItemId === 'file_' + fileId ? 'selected' : ''}`;
+                if (window.clipboardItemId === 'file_' + fileId) item.style.opacity = "0.5";
+
+                item.innerHTML = `<div class="item-icon">📄</div><div class="item-name">${window.EXPLORER_DATA.files[fileId].name}</div>`;
+                item.onclick = (e) => { e.stopPropagation(); selectItem('file_' + fileId); };
+                item.ondblclick = () => { bukaFileTabel(fileId); };
+                gridView.appendChild(item);
+            }
+        }
+
+        document.getElementById("itemCountStatus").innerText = `${count} object(s)`.toUpperCase();
+    }
+
+    function pindahFolder(folderId) {
+        window.currentFolderId = folderId;
+        window.selectedItemId = null;
+        renderExplorer();
+    }
+
+    function selectItem(itemId) {
+        window.selectedItemId = itemId;
+        renderExplorer();
+    }
+
+    function clearSelection(e) {
+        window.selectedItemId = null;
+        renderExplorer();
+    }
+
+    function updateAddressBar() {
+        let path = "";
+        let current = window.currentFolderId;
+        while (current !== "root" && window.EXPLORER_DATA.folders[current]) {
+            path = "\\" + window.EXPLORER_DATA.folders[current].name + path;
+            current = window.EXPLORER_DATA.folders[current].parent;
+        }
+        document.getElementById("addressInput").value = "C:" + (path || "\\");
+    }
+
+    function navigasiKeAtas() {
+        if (window.currentFolderId === "root") return;
+        const currentFolder = window.EXPLORER_DATA.folders[window.currentFolderId];
+        if (currentFolder) { pindahFolder(currentFolder.parent); }
+    }
+
+    function updateToolbarButtons() {
+        document.getElementById("btnOpenSelected").disabled = !window.selectedItemId;
+        document.getElementById("btnRename").disabled = !window.selectedItemId;
+        document.getElementById("btnCut").disabled = !window.selectedItemId;
+        document.getElementById("btnPaste").disabled = !window.clipboardItemId;
+    }
+
+    function bukaItemTerpilih() {
+        if (!window.selectedItemId) return;
+        if (window.selectedItemId.startsWith("dir_")) {
+            const id = window.selectedItemId.replace("dir_", "");
+            pindahFolder(id);
+        } else if (window.selectedItemId.startsWith("file_")) {
+            const id = window.selectedItemId.replace("file_", "");
+            bukaFileTabel(id);
+        }
+    }
+
+    // FUNGSI RENAME (UBAH NAMA FOLDER / FILE)
+    function renameItemTerpilih() {
+        if (!window.selectedItemId) return;
+
+        if (window.selectedItemId.startsWith("dir_")) {
+            const id = window.selectedItemId.replace("dir_", "");
+            const currentName = window.EXPLORER_DATA.folders[id].name;
+            const namaBaru = prompt("Masukkan nama baru untuk Folder ini:", currentName);
+            if (!namaBaru || namaBaru.trim() === "" || namaBaru.trim() === currentName) return;
+            
+            window.EXPLORER_DATA.folders[id].name = namaBaru.trim();
+            saveExplorerToCloud("Nama folder berhasil diubah.");
+
+        } else if (window.selectedItemId.startsWith("file_")) {
+            const id = window.selectedItemId.replace("file_", "");
+            const currentName = window.EXPLORER_DATA.files[id].name;
+            const namaBaru = prompt("Masukkan nama baru untuk File ini (.json):", currentName);
+            if (!namaBaru || namaBaru.trim() === "" || namaBaru.trim() === currentName) return;
+            
+            let fixNama = namaBaru.trim();
+            if(!fixNama.endsWith(".json")) fixNama += ".json";
+
+            window.EXPLORER_DATA.files[id].name = fixNama;
+            saveExplorerToCloud("Nama file berhasil diubah.");
+        }
+    }
+
+    function cutItemTerpilih() {
+        if (!window.selectedItemId) return;
+        window.clipboardItemId = window.selectedItemId;
+        document.getElementById("dbStatus").innerText = "Item disalin ke papan klip. Buka folder tujuan lalu klik Paste.";
+        renderExplorer();
+    }
+
+    function pasteItemKeFolder() {
+        if (!window.clipboardItemId) return;
+
+        if (window.clipboardItemId.startsWith("dir_")) {
+            const id = window.clipboardItemId.replace("dir_", "");
+            if (id === window.currentFolderId) { alert("Tidak bisa memindahkan folder ke dalam dirinya sendiri!"); return; }
+            window.EXPLORER_DATA.folders[id].parent = window.currentFolderId;
+        } else if (window.clipboardItemId.startsWith("file_")) {
+            const id = window.clipboardItemId.replace("file_", "");
+            window.EXPLORER_DATA.files[id].folderId = window.currentFolderId;
+        }
+
+        window.clipboardItemId = null;
+        window.selectedItemId = null;
+        saveExplorerToCloud("Item berhasil dipindahkan.");
+    }
+
+    function buatFolderBaru() {
+        const nama = prompt("Masukkan nama Folder Mitra baru:");
+        if (!nama || nama.trim() === "") return;
+        const newId = "fld_" + Date.now();
+        window.EXPLORER_DATA.folders[newId] = { name: nama.trim(), parent: window.currentFolderId };
+        saveExplorerToCloud("Folder baru berhasil dibuat.");
+    }
+
+    function buatFileBaru() {
+        const nama = prompt("Masukkan nama File Tagihan (.json):");
+        if (!nama || nama.trim() === "") return;
+        let fixNama = nama.trim();
+        if(!fixNama.endsWith(".json")) fixNama += ".json";
+
+        const newFileId = "fil_" + Date.now();
+        window.EXPLORER_DATA.files[newFileId] = {
+            name: fixNama,
+            folderId: window.currentFolderId,
+            content: {
+                title: fixNama.replace(".json", "").toUpperCase(),
+                columns: [
+                    { name: "TANGGAL KELUAR", type: "date", width: "90px" },
+                    { name: "NO KONTRAK", type: "text", width: "" },
+                    { name: "TOTAL TAGIHAN", type: "currency", width: "" },
+                    { name: "STATUS", type: "status", width: "80px" }
+                ],
+                rows: [["", "", "", "BELUM"]]
+            }
+        };
+        saveExplorerToCloud("File tabel baru berhasil dibuat.");
+    }
+
+    function hapusItemTerpilih() {
+        if (!window.selectedItemId) { alert("Pilih file atau folder terlebih dahulu!"); return; }
+        if (!confirm("Hapus item ini secara permanen?")) return;
+
+        if (window.selectedItemId.startsWith("dir_")) {
+            const id = window.selectedItemId.replace("dir_", "");
+            delete window.EXPLORER_DATA.folders[id];
+            for (let f in window.EXPLORER_DATA.files) {
+                if (window.EXPLORER_DATA.files[f].folderId === id) delete window.EXPLORER_DATA.files[f];
+            }
+        } else if (window.selectedItemId.startsWith("file_")) {
+            const id = window.selectedItemId.replace("file_", "");
+            delete window.EXPLORER_DATA.files[id];
+        }
+        window.selectedItemId = null;
+        saveExplorerToCloud("Item berhasil dihapus.");
+    }
+
+    // ==========================================
+    // LOGIK EDITOR TABEL REKAP DINAMIS
+    // ==========================================
+
+    function bukaFileTabel(fileId) {
+        window.activeOpenedFileId = fileId;
+        const file = window.EXPLORER_DATA.files[fileId];
+        document.getElementById("editorFileName").innerText = `💾 Mengedit Dokumen: [ ${file.name} ]`;
+        document.getElementById("tableEditorOverlay").style.display = "flex";
+        muatUlangTabelDariJSON(file.content);
+    }
+
+    function tutupFileTabel() {
+        document.getElementById("tableEditorOverlay").style.display = "none";
+        window.activeOpenedFileId = null;
+        renderExplorer();
+    }
+
+    let fileSaveTimeout;
+    function triggerTableAutoSave() {
+        if (!window.activeOpenedFileId) return;
+        document.getElementById("dbStatus").innerText = "Mengetik, mencadangkan data...";
+        clearTimeout(fileSaveTimeout);
+        fileSaveTimeout = setTimeout(() => {
+            const dataTabelTerbaru = eksporStrukturTabelKeJSON();
+            window.EXPLORER_DATA.files[window.activeOpenedFileId].content = dataTabelTerbaru;
+            saveExplorerToCloud("Koleksi tabel aman di cloud ✨");
+        }, 1000);
+    }
+
+    function generateCellHTML(cell, type, value) {
+        if (type === 'currency') {
+            cell.innerHTML = `<input type="text" class="table-input text-right" value="${value}" placeholder="0" oninput="formatRupiah(this)"><div class="print-text text-right">${value || 0}</div>`;
+        } else if (type === 'number') {
+            cell.innerHTML = `<input type="number" pattern="[0-9]*" inputmode="numeric" class="table-input text-center" value="${value}" placeholder="0" oninput="updatePrintText(this)"><div class="print-text text-center">${value || 0}</div>`;
+        } else if (type === 'date') {
+            cell.innerHTML = `<input type="date" class="table-input text-center" value="${value}" oninput="updatePrintText(this)"><div class="print-text text-center">${value}</div>`;
+        } else if (type === 'status') {
+            let sLunas = value === 'LUNAS' ? 'selected' : '';
+            let sProses = value === 'PROSES' ? 'selected' : '';
+            let sBelum = value === 'BELUM' ? 'selected' : '';
+            cell.innerHTML = `
+                <select class="table-select text-center" onchange="updatePrintText(this)">
+                    <option value="BELUM" ${sBelum}>🔴 BELUM</option>
+                    <option value="PROSES" ${sProses}>🟡 PROSES</option>
+                    <option value="LUNAS" ${sLunas}>🟢 LUNAS</option>
+                </select>
+                <div class="print-text text-center">${value || 'BELUM'}</div>`;
+        } else {
+            cell.innerHTML = `<input type="text" class="table-input" value="${value}" placeholder="" oninput="updatePrintText(this)"><div class="print-text">${value}</div>`;
+        }
+    }
+
+    function updatePrintText(input) {
+        var parentCell = input.parentElement;
+        var printTextDiv = parentCell.querySelector('.print-text');
+        if (printTextDiv) { printTextDiv.innerText = input.value; }
+        hitungTotalMataUangDanNomor();
+        triggerTableAutoSave();
+    }
+
+    function formatRupiah(input) {
+        var value = input.value.replace(/\D/g, ""); 
+        if (value === "") { input.value = ""; updatePrintText(input); return; }
+        input.value = parseInt(value, 10).toLocaleString('id-ID');
+        updatePrintText(input);
+    }
+
+    function rebuildFooter() {
+        var headerRow = document.getElementById("headerRow");
+        var totalRow = document.getElementById("totalRow");
+        if (!totalRow) return; totalRow.innerHTML = ""; 
+        var totalCols = headerRow.cells.length;
+        var firstCell = totalRow.insertCell(0);
+        firstCell.className = "text-right"; firstCell.innerText = "TOTAL :";
+        
+        for (var i = 1; i < totalCols; i++) {
+            var cell = totalRow.insertCell(i);
+            var colType = headerRow.cells[i].getAttribute('data-type');
+            if (i === totalCols - 1) { cell.className = "action-col"; } 
+            else if (colType === 'currency' || colType === 'number') { cell.className = "text-right"; cell.innerText = "0"; } 
+            else { cell.innerText = ""; }
+        }
+        hitungTotalMataUangDanNomor();
+    }
+
+    function tambahKolomAwal() {
+        var columnName = document.getElementById("newColumnName").value.trim();
+        var columnType = document.getElementById("newColumnType").value;
+        if (columnName === "") { alert("Silakan isi nama judul kolom!"); return; }
+
+        var table = document.getElementById("dynamicTable");
+        var headerRow = document.getElementById("headerRow");
+        var totalCols = headerRow.cells.length;
+
+        var th = document.createElement('th');
+        th.setAttribute('data-type', columnType); 
+        th.innerHTML = columnName + `
+            <div class="col-controls no-print">
+                <button class="btn-nav" onclick="geserKolom(this, -1)">◀</button>
+                <button class="btn-nav" onclick="geserKolom(this, 1)">▶</button>
+                <button class="btn-del-col" onclick="hapusKolomSpesifik(this)">X</button>
+            </div>`;
+        headerRow.insertBefore(th, headerRow.cells[totalCols - 1]);
+
+        var tbodyRows = table.getElementsByTagName('tbody')[0].rows;
+        for (var i = 0; i < tbodyRows.length; i++) {
+            var cell = tbodyRows[i].insertCell(tbodyRows[i].cells.length - 1);
+            generateCellHTML(cell, columnType, "");
+        }
+
+        document.getElementById("newColumnName").value = "";
+        rebuildFooter(); sesuaikanUkuranTabel(); triggerTableAutoSave();
+    }
+
+    function hapusKolomSpesifik(button) {
+        if (confirm("Apakah Anda yakin ingin menghapus kolom ini?")) {
+            var th = button.closest('th'); var index = th.cellIndex;
+            var table = document.getElementById("dynamicTable");
+            document.getElementById("headerRow").deleteCell(index);
+            var tbodyRows = table.getElementsByTagName('tbody')[0].rows;
+            for (var i = 0; i < tbodyRows.length; i++) { tbodyRows[i].deleteCell(index); }
+            rebuildFooter(); sesuaikanUkuranTabel(); triggerTableAutoSave();
+        }
+    }
+
+    function geserKolom(button, direction) {
+        var th = button.closest('th'); var index = th.cellIndex;
+        var headerRow = document.getElementById("headerRow"); var targetIndex = index + direction;
+        if (targetIndex <= 0 || targetIndex >= headerRow.cells.length - 1) return; 
+
+        if (direction === 1) { headerRow.insertBefore(headerRow.cells[targetIndex], th); } 
+        else { headerRow.insertBefore(th, headerRow.cells[targetIndex]); }
+
+        var table = document.getElementById("dynamicTable");
+        var tbodyRows = table.getElementsByTagName('tbody')[0].rows;
+        for (var i = 0; i < tbodyRows.length; i++) {
+            var row = tbodyRows[i];
+            if (direction === 1) { row.insertBefore(row.cells[targetIndex], row.cells[index]); } 
+            else { row.insertBefore(row.cells[index], row.cells[targetIndex]); }
+        }
+        rebuildFooter(); triggerTableAutoSave();
+    }
+
+    function tambahBaris() {
+        var headerRow = document.getElementById("headerRow");
+        var tbody = document.getElementById("tableBody");
+        var newRow = tbody.insertRow(-1);
+        var totalCols = headerRow.cells.length;
+
+        for (var i = 0; i < totalCols; i++) {
+            var cell = newRow.insertCell(i);
+            var colType = headerRow.cells[i].getAttribute('data-type');
+            if (i === 0) { cell.className = "text-center row-number"; } 
+            else if (i === totalCols - 1) {
+                cell.className = "action-col text-center";
+                cell.innerHTML = `<button type="button" class="btn-del-row" onclick="hapusBaris(this)">X</button>`;
+            } else { generateCellHTML(cell, colType, ""); }
+        }
+        updateNomorDanTotal(); sesuaikanUkuranTabel(); triggerTableAutoSave();
+    }
+
+    function hapusBaris(button) {
+        var row = button.parentNode.parentNode;
+        row.parentNode.removeChild(row);
+        updateNomorDanTotal(); hitungTotalMataUangDanNomor(); triggerTableAutoSave();
+    }
+
+    function hitungTotalMataUangDanNomor() {
+        var headerRow = document.getElementById("headerRow");
+        var tbodyRows = document.getElementById("tableBody").rows;
+        var totalRow = document.getElementById("totalRow");
+        if(!totalRow || totalRow.cells.length === 0) return;
+        var totalCols = headerRow.cells.length;
+
+        for (var colIndex = 1; colIndex < totalCols - 1; colIndex++) {
+            var colType = headerRow.cells[colIndex].getAttribute('data-type');
+            if (colType === 'currency' || colType === 'number') {
+                var grandTotalKolom = 0;
+                for (var rowIndex = 0; rowIndex < tbodyRows.length; rowIndex++) {
+                    var inputEl = tbodyRows[rowIndex].cells[colIndex].querySelector('input');
+                    if (inputEl) {
+                        var angkaBersih = parseFloat(inputEl.value.replace(/\./g, "")) || 0;
+                        grandTotalKolom += angkaBersih;
+                    }
+                }
+                totalRow.cells[colIndex].innerText = colType === 'currency' ? grandTotalKolom.toLocaleString('id-ID') : grandTotalKolom;
+            }
+        }
+    }
+
+    function updateNomorDanTotal() {
+        var rows = document.getElementById("tableBody").rows;
+        for (var i = 0; i < rows.length; i++) { rows[i].querySelector('.row-number').innerText = i + 1; }
+    }
+
+    function sesuaikanUkuranTabel() {
+        var headerRow = document.getElementById("headerRow");
+        var totalKolom = headerRow.cells.length - 2; 
+        var tabel = document.getElementById("dynamicTable");
+        var fontSize = 11; var padding = 5;
+        if (totalKolom > 8) { fontSize = 9; padding = 3; }
+        var allCells = tabel.querySelectorAll("th, td");
+        allCells.forEach(function(cell) { cell.style.fontSize = fontSize + "px"; cell.style.padding = padding + "px"; });
+    }
+
+    function eksporStrukturTabelKeJSON() {
+        const title = document.getElementById("docTitle").value;
+        const headerRow = document.getElementById("headerRow");
+        const tbodyRows = document.getElementById("tableBody").rows;
+        
+        const columns = [];
+        for (let i = 1; i < headerRow.cells.length - 1; i++) {
+            columns.push({
+                name: headerRow.cells[i].firstChild.textContent.trim(),
+                type: headerRow.cells[i].getAttribute('data-type'),
+                width: headerRow.cells[i].style.width || ""
+            });
+        }
+        const rows = [];
+        for (let i = 0; i < tbodyRows.length; i++) {
+            const rowData = [];
+            for (let j = 1; j < tbodyRows[i].cells.length - 1; j++) {
+                const input = tbodyRows[i].cells[j].querySelector('input, select');
+                rowData.push(input ? input.value : "");
+            }
+            rows.push(rowData);
+        }
+        return { title, columns, rows };
+    }
+
+    function muatUlangTabelDariJSON(data) {
+        if(!data) return;
+        document.getElementById("docTitle").value = data.title || "LAPORAN REKAPITULASI DATA";
+        const headerRow = document.getElementById("headerRow");
+        headerRow.innerHTML = `<th style="width: 30px;" data-type="system">NO</th><th class="action-col" style="width: 40px;" data-type="system">AKSI</th>`;
+        
+        if (data.columns) {
+            data.columns.forEach(col => {
+                const th = document.createElement('th');
+                th.setAttribute('data-type', col.type);
+                if(col.width) th.style.width = col.width;
+                th.innerHTML = col.name + `
+                    <div class="col-controls no-print">
+                        <button class="btn-nav" onclick="geserKolom(this, -1)">◀</button>
+                        <button class="btn-nav" onclick="geserKolom(this, 1)">▶</button>
+                        <button class="btn-del-col" onclick="hapusKolomSpesifik(this)">X</button>
+                    </div>`;
+                headerRow.insertBefore(th, headerRow.cells[headerRow.cells.length - 1]);
+            });
+        }
+
+        const tbody = document.getElementById("tableBody");
+        tbody.innerHTML = "";
+        if (data.rows) {
+            data.rows.forEach((row, rIndex) => {
+                const newRow = tbody.insertRow(-1);
+                const cellNo = newRow.insertCell(0);
+                cellNo.className = "text-center row-number";
+                cellNo.innerText = rIndex + 1;
+
+                row.forEach((val, cIndex) => {
+                    const cell = newRow.insertCell(cIndex + 1);
+                    const colType = data.columns[cIndex].type;
+                    generateCellHTML(cell, colType, val);
+                });
+
+                const cellAksi = newRow.insertCell(newRow.cells.length);
+                cellAksi.className = "action-col text-center";
+                cellAksi.innerHTML = `<button type="button" class="btn-del-row" onclick="hapusBaris(this)">X</button>`;
+            });
+        }
+        updateNomorDanTotal(); rebuildFooter(); sesuaikanUkuranTabel();
+    }
+</script>
+</body>
+</html>
