@@ -3,196 +3,253 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rekap Data Super Dinamis with Firebase</title>
+    <title>Windows Classic Explorer - Rekap Data Cloud</title>
     <style>
+        /* STYLE UTAMA WINDOWS CLASSIC (95/98) */
         body {
-            font-family: Arial, sans-serif;
+            background-color: #3a6ea5; /* Warna desktop teal khas Win95 */
+            font-family: "Tahoma", "Arial", sans-serif;
+            font-size: 12px;
             margin: 0;
-            padding: 20px;
-            color: #000;
-            background-color: #f9f9f9;
+            padding: 10px;
+            height: 100vh;
+            box-sizing: border-box;
+            overflow: hidden;
         }
-        .container {
-            width: 100%;
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 20px;
-            background: #fff;
-            border: 1px dashed #ccc;
+
+        .win95-window {
+            background-color: #d4d0c8;
+            border-top: 2px solid #fff;
+            border-left: 2px solid #fff;
+            border-right: 2px solid #404040;
+            border-bottom: 2px solid #404040;
+            box-shadow: 1px 1px 0px 0px #000;
+            padding: 2px;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
             box-sizing: border-box;
         }
-        
-        .space-for-kop {
-            height: 150px;
-            display: none;
-        }
 
-        .doc-title-container {
-            text-align: center;
-            margin-bottom: 25px;
-        }
-        .editable-title {
-            font-size: 18px;
+        .title-bar {
+            background: linear-gradient(90deg, #000080, #1084d0);
+            color: white;
+            padding: 3px 6px;
             font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            text-align: center;
-            width: 80%;
-            border: 1px dashed #007bff;
-            padding: 5px;
-            outline: none;
-            font-family: inherit;
-        }
-        .editable-title:focus {
-            background-color: #f0f7ff;
-            border: 1px solid #007bff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .control-panel {
-            background-color: #f8f9fa;
-            padding: 15px;
-            border: 1px dashed #007bff;
-            border-radius: 6px;
-            margin-bottom: 20px;
+        .title-bar-text {
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
-        .control-panel h3 {
-            margin: 0 0 10px 0;
-            font-size: 14px;
-            color: #007bff;
-        }
-        .input-group {
+
+        /* Menu Bar & Toolbar */
+        .menu-bar {
             display: flex;
             gap: 10px;
+            padding: 4px 6px;
+            border-bottom: 1px solid #808080;
+        }
+        .menu-item { cursor: pointer; }
+        .menu-item:hover { background-color: #000080; color: white; }
+
+        .toolbar {
+            display: flex;
+            gap: 5px;
+            padding: 4px;
+            background-color: #d4d0c8;
+            border-bottom: 2px solid #808080;
             align-items: center;
             flex-wrap: wrap;
         }
-        .input-group input, .input-group select {
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 13px;
-        }
-        .input-group input { flex-grow: 1; min-width: 200px; }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 15px;
-            table-layout: auto;
-        }
-        th, td {
-            border: 1px solid #000;
-            padding: 6px 4px;
+        .btn-win95 {
+            background-color: #d4d0c8;
+            border-top: 1px solid #fff;
+            border-left: 1px solid #fff;
+            border-right: 1px solid #808080;
+            border-bottom: 1px solid #808080;
+            padding: 3px 8px;
+            cursor: pointer;
+            font-family: inherit;
             font-size: 11px;
-            vertical-align: middle;
-            word-wrap: break-word; 
-            word-break: break-all;
-            white-space: normal; 
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
-        th {
-            background-color: #f2f2f2;
-            text-align: center;
-            font-weight: bold;
+        .btn-win95:active {
+            border-top: 1px solid #808080;
+            border-left: 1px solid #808080;
+            border-right: 1px solid #fff;
+            border-bottom: 1px solid #fff;
+            padding: 4px 7px 2px 9px;
+        }
+
+        .address-bar-container {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px;
+            background-color: #d4d0c8;
+            border-bottom: 2px solid #fff;
+        }
+        .address-input {
+            flex-grow: 1;
+            background-color: #fff;
+            border-top: 2px solid #808080;
+            border-left: 2px solid #808080;
+            border-right: 2px solid #fff;
+            border-bottom: 2px solid #fff;
+            padding: 2px 4px;
+            font-size: 11px;
+            outline: none;
+        }
+
+        /* Main Workspace Explorer */
+        .explorer-body {
+            display: flex;
+            flex-grow: 1;
+            background-color: #fff;
+            border-top: 2px solid #808080;
+            border-left: 2px solid #808080;
+            border-right: 2px solid #fff;
+            border-bottom: 2px solid #fff;
+            margin: 4px;
+            overflow: hidden;
+        }
+
+        /* Panel Kiri: Tree View Folder */
+        .left-panel {
+            width: 250px;
+            border-right: 2px solid #d4d0c8;
+            overflow-y: auto;
+            padding: 5px;
+            box-sizing: border-box;
+            background-color: #fff;
+        }
+
+        /* Panel Kanan: Isi Folder / Grid File */
+        .right-panel {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-content: flex-start;
+            background-color: #fff;
             position: relative;
         }
-        
-        .table-input {
-            width: 100%;
-            box-sizing: border-box;
-            border: none;
-            outline: none;
-            background: transparent;
-            font-size: inherit;
-            font-family: inherit;
-            word-wrap: break-word;
-            white-space: normal;
+
+        /* Item Style (Folder / File) di Panel Kanan */
+        .explorer-item {
+            width: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+            user-select: none;
+            padding: 5px;
+            border: 1px solid transparent;
         }
+        .explorer-item:hover {
+            background-color: #e6f2ff;
+            border: 1px solid #3a6ea5;
+        }
+        .explorer-item.selected {
+            background-color: #000080 !important;
+            color: white !important;
+        }
+        .item-icon {
+            font-size: 32px;
+            margin-bottom: 4px;
+        }
+        .item-name {
+            font-size: 11px;
+            word-wrap: break-word;
+            max-width: 100%;
+        }
+
+        /* TREE VIEW FOLDER INDENTATION */
+        .tree-item {
+            cursor: pointer;
+            padding: 2px 4px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            user-select: none;
+        }
+        .tree-item:hover { background-color: #e6f2ff; }
+        .tree-item.active { background-color: #000080; color: white; }
+        .tree-children { padding-left: 15px; }
+
+        /* PANEL EDITOR TABEL (Akan muncul menutupi Explorer saat file dibuka) */
+        .table-editor-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #fff;
+            display: none;
+            flex-direction: column;
+            padding: 15px;
+            overflow-y: auto;
+            z-index: 10;
+        }
+
+        /* REKAP TABEL STYLE (DARI KODE SEBELUMNYA) */
+        .control-panel {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border: 1px dashed #007bff;
+            margin-bottom: 15px;
+        }
+        .input-group { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+        .input-group input, .input-group select { padding: 5px; border: 1px solid #ccc; font-size: 12px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+        th, td { border: 1px solid #000; padding: 5px; font-size: 11px; vertical-align: middle; }
+        th { background-color: #f2f2f2; font-weight: bold; }
+        .table-input, .table-select { width: 100%; box-sizing: border-box; border: none; outline: none; background: transparent; font-family: inherit; font-size: inherit; }
         .text-center { text-align: center; }
         .text-right { text-align: right; }
-        
-        .row-total {
-            background-color: #f9f9f9;
-            font-weight: bold;
-        }
+        .row-total { background-color: #f9f9f9; font-weight: bold; }
+        .col-controls { margin-top: 3px; display: flex; justify-content: center; gap: 2px; }
+        .btn-nav { background: #fff; border: 1px solid #000; padding: 0 2px; font-size: 8px; cursor: pointer; }
+        .btn-del-col { background-color: #ffc107; font-size: 8px; border: 1px solid #000; cursor: pointer; }
+        .btn-del-row { background-color: #dc3545; color: white; border: none; padding: 2px 5px; cursor: pointer; }
 
-        .col-controls {
-            margin-top: 5px;
-            display: flex;
-            justify-content: center;
-            gap: 2px;
-        }
-        .btn-nav {
-            background: #fff;
-            border: 1px solid #000;
-            padding: 1px 3px;
-            font-size: 9px;
-            cursor: pointer;
-            border-radius: 2px;
-        }
-        .btn-nav:hover { background: #e0e0e0; }
-        
-        .btn {
-            padding: 8px 16px;
-            font-size: 13px;
-            font-weight: bold;
-            cursor: pointer;
-            border: 1px solid #000;
-            border-radius: 4px;
-        }
-        .btn-add-row { background-color: #007bff; color: white; border: none; }
-        .btn-action { background-color: #6c757d; color: white; border: none; }
-        .btn-print { background-color: #28a745; color: white; border: none; padding: 10px 20px; font-size: 14px;}
-        
-        .btn-del-row {
-            background-color: #dc3545;
-            color: white;
-            border: none;
-            padding: 2px 6px;
-            cursor: pointer;
-            border-radius: 3px;
-        }
-        .btn-del-col {
-            background-color: #ffc107;
-            color: black;
-            border: 1px solid #000;
-            padding: 1px 3px;
-            font-size: 9px;
-            cursor: pointer;
-            border-radius: 2px;
-        }
-
-        .footer-status {
-            font-size: 13px;
-            font-weight: bold;
-            margin-top: 10px;
+        /* Status Bar Bawah Window */
+        .status-bar {
+            background-color: #d4d0c8;
+            border-top: 2px solid #808080;
+            padding: 2px 4px;
             display: flex;
             justify-content: space-between;
+            font-size: 11px;
+            gap: 5px;
         }
-        #saveStatus {
-            color: #28a745;
-            font-style: italic;
+        .status-field {
+            background-color: #d4d0c8;
+            border-top: 1px solid #808080;
+            border-left: 1px solid #808080;
+            border-right: 1px solid #fff;
+            border-bottom: 1px solid #fff;
+            padding: 2px 6px;
+            flex-grow: 1;
         }
 
-        .print-text {
-            display: none;
-        }
-
+        .print-text { display: none; }
         @media print {
-            @page {
-                size: portrait;
-                margin: 10mm 8mm 10mm 8mm; 
-            }
-            body { padding: 0; background: none; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            .container { border: none; padding: 0; width: 100% !important; max-width: 100% !important; }
-            .space-for-kop { display: block !important; }
-            .editable-title { border: none !important; padding: 0; width: 100%; } 
-            .no-print, .control-panel, .btn-del-row, .col-controls, .btn-add-row, .btn-print, .action-col { display: none !important; }
-            input.table-input { display: none !important; }
+            body { background: none; overflow: visible; }
+            .win95-window, .explorer-body, .left-panel, .right-panel, .no-print, .control-panel, .col-controls, .btn-del-row, .action-col, .toolbar, .address-bar-container, .title-bar, .status-bar { display: none !important; }
+            .table-editor-overlay { display: block !important; position: static; padding: 0; }
+            input.table-input, select.table-select { display: none !important; }
             .print-text { display: block !important; white-space: normal !important; word-wrap: break-word !important; }
-            table { width: 100% !important; page-break-inside: auto; }
-            tr { page-break-inside: avoid; page-break-after: auto; }
+            table { width: 100% !important; }
             th { background-color: #f2f2f2 !important; }
-            .row-total { background-color: #f9f9f9 !important; }
         }
     </style>
 
@@ -200,7 +257,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // Konfigurasi Firebase milik Anda
         const firebaseConfig = {
             apiKey: "AIzaSyAu4Y3nJCqzmGZbU30KqcOxYKESIuI7Ick",
             authDomain: "tagihan-f4cf7.firebaseapp.com",
@@ -211,223 +267,413 @@
             appId: "1:974025319428:web:ad7bd03f9e0b44c0840151"
         };
 
-        // Inisialisasi Firebase & Realtime Database
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
-        const dbRef = ref(db, 'rekap_tabel_data');
+        const dbRef = ref(db, 'windows_explorer_data');
 
-        // FUNGI AUTO SAVE
-        let saveTimeout;
-        window.autoSaveData = function() {
-            document.getElementById("saveStatus").innerText = "Menyimpan perubahan...";
-            clearTimeout(saveTimeout);
-            
-            saveTimeout = setTimeout(() => {
-                const dataSistem = eksporStrukturTabelKeJSON();
-                set(dbRef, dataSistem)
-                .then(() => {
-                    document.getElementById("saveStatus").innerText = "Semua data tersimpan otomatis ke Firebase ✨";
-                })
-                .catch((error) => {
-                    document.getElementById("saveStatus").innerText = "Gagal simpan: " + error.message;
-                });
-            }, 1000);
-        }
+        // State Global Aplikasi Explorer
+        window.EXPLORER_DATA = { folders: {}, files: {} };
+        window.currentFolderId = "root";
+        window.selectedItemId = null;
+        window.activeOpenedFileId = null;
 
-        // FUNGSI AUTO LOAD SAAT HALAMAN DIBUKA
+        // Mendengarkan Perubahan Data Cloud secara Realtime
         onValue(dbRef, (snapshot) => {
             const data = snapshot.val();
             if (data) {
-                muatUlangTabelDariJSON(data);
-                document.getElementById("saveStatus").innerText = "Data terakhir berhasil dimuat dari cloud.";
+                window.EXPLORER_DATA = {
+                    folders: data.folders || {},
+                    files: data.files || {}
+                };
             } else {
-                rebuildFooter();
-                sesuaikanUkuranTabel();
-                document.getElementById("saveStatus").innerText = "Database kosong. Siap mengisi data baru.";
+                window.EXPLORER_DATA = { folders: {}, files: {} };
             }
-        }, { onlyOnce: true });
+            renderExplorer();
+            
+            // Jika ada file tabel yang sedang dibuka, perbarui tampilannya secara live jika ada simpanan baru
+            if (window.activeOpenedFileId && window.EXPLORER_DATA.files[window.activeOpenedFileId]) {
+                const activeFile = window.EXPLORER_DATA.files[window.activeOpenedFileId];
+                if(activeFile.content) muatUlangTabelDariJSON(activeFile.content);
+            }
+            document.getElementById("dbStatus").innerText = "Sistem File Cloud Terkoneksi ✨";
+        });
+
+        // Simpan Data Explorer & File secara Keseluruhan ke Firebase
+        window.saveExplorerToCloud = function(statusText = "Perubahan tersimpan otomatis.") {
+            document.getElementById("dbStatus").innerText = "Menyimpan ke cloud...";
+            set(dbRef, window.EXPLORER_DATA)
+            .then(() => {
+                document.getElementById("dbStatus").innerText = statusText;
+            })
+            .catch((err) => {
+                document.getElementById("dbStatus").innerText = "Gagal Simpan: " + err.message;
+            });
+        }
     </script>
 </head>
 <body>
 
-<div class="container">
-    <div class="space-for-kop"></div>
-
-    <div class="doc-title-container">
-        <input type="text" id="docTitle" class="editable-title" value="LAPORAN REKAPITULASI DATA" oninput="autoSaveData()">
-    </div>
-
-    <div class="control-panel no-print">
-        <h3>Fitur Pengatur Kolom Atas</h3>
-        <div class="input-group">
-            <input type="text" id="newColumnName" placeholder="Ketik nama Judul Kolom baru...">
-            
-            <select id="newColumnType">
-                <option value="text">Teks Biasa</option>
-                <option value="currency">Mata Uang (Rupiah/Total Otomatis)</option>
-                <option value="date">Tanggal (Kalender)</option>
-            </select>
-            
-            <button type="button" class="btn btn-action" onclick="tambahKolomAwal()">+ Tambah Kolom Baru</button>
+<div class="win95-window">
+    <div class="title-bar">
+        <div class="title-bar-text">
+            <span>📁</span> Exploring - My Cloud Database (C:)
+        </div>
+        <div>
+            <button style="font-weight:bold; font-size:9px; padding:1px 3px;">X</button>
         </div>
     </div>
 
-    <table id="dynamicTable">
-        <thead>
-            <tr id="headerRow">
-                <th style="width: 30px;" data-type="system">NO</th>
-                <th data-type="text" style="width: 80px;">TANGGAL
-                    <div class="col-controls no-print">
-                        <button class="btn-nav" onclick="geserKolom(this, -1)">◀</button>
-                        <button class="btn-nav" onclick="geserKolom(this, 1)">▶</button>
-                        <button class="btn-del-col" onclick="hapusKolomSpesifik(this)">X</button>
-                    </div>
-                </th>
-                <th data-type="text" style="width: 90px;">TANGGAL KELUAR ABSAH
-                    <div class="col-controls no-print">
-                        <button class="btn-nav" onclick="geserKolom(this, -1)">◀</button>
-                        <button class="btn-nav" onclick="geserKolom(this, 1)">▶</button>
-                        <button class="btn-del-col" onclick="hapusKolomSpesifik(this)">X</button>
-                    </div>
-                </th>
-                <th data-type="text">No Kontrak
-                    <div class="col-controls no-print">
-                        <button class="btn-nav" onclick="geserKolom(this, -1)">◀</button>
-                        <button class="btn-nav" onclick="geserKolom(this, 1)">▶</button>
-                        <button class="btn-del-col" onclick="hapusKolomSpesifik(this)">X</button>
-                    </div>
-                </th>
-                <th data-type="text" style="width: 80px;">NO POLISI
-                    <div class="col-controls no-print">
-                        <button class="btn-nav" onclick="geserKolom(this, -1)">◀</button>
-                        <button class="btn-nav" onclick="geserKolom(this, 1)">▶</button>
-                        <button class="btn-del-col" onclick="hapusKolomSpesifik(this)">X</button>
-                    </div>
-                </th>
-                <th data-type="text">NO BPKB
-                    <div class="col-controls no-print">
-                        <button class="btn-nav" onclick="geserKolom(this, -1)">◀</button>
-                        <button class="btn-nav" onclick="geserKolom(this, 1)">▶</button>
-                        <button class="btn-del-col" onclick="hapusKolomSpesifik(this)">X</button>
-                    </div>
-                </th>
-                <th data-type="text">NAMA BPKB
-                    <div class="col-controls no-print">
-                        <button class="btn-nav" onclick="geserKolom(this, -1)">◀</button>
-                        <button class="btn-nav" onclick="geserKolom(this, 1)">▶</button>
-                        <button class="btn-del-col" onclick="hapusKolomSpesifik(this)">X</button>
-                    </div>
-                </th>
-                <th class="action-col" style="width: 40px;" data-type="system">AKSI</th>
-            </tr>
-        </thead>
-        <tbody id="tableBody">
-            <tr>
-                <td class="text-center row-number">1</td>
-                <td>
-                    <input type="text" class="table-input text-center" placeholder="26-May-26" oninput="updatePrintText(this)">
-                    <div class="print-text text-center">26-May-26</div>
-                </td>
-                <td>
-                    <input type="text" class="table-input text-center" placeholder="03-Jun-26" oninput="updatePrintText(this)">
-                    <div class="print-text text-center">03-Jun-26</div>
-                </td>
-                <td>
-                    <input type="text" class="table-input" placeholder="061826000379" oninput="updatePrintText(this)">
-                    <div class="print-text">061826000379</div>
-                </td>
-                <td>
-                    <input type="text" class="table-input" placeholder="BK1701LAJ" oninput="updatePrintText(this)">
-                    <div class="print-text">BK1701LAJ</div>
-                </td>
-                <td>
-                    <input type="text" class="table-input" placeholder="S-06712388" oninput="updatePrintText(this)">
-                    <div class="print-text">S-06712388</div>
-                </td>
-                <td>
-                    <input type="text" class="table-input" placeholder="MARISCA ROSElina..." oninput="updatePrintText(this)">
-                    <div class="print-text">MARISCA ROSElina...</div>
-                </td>
-                <td class="action-col text-center">
-                    <button type="button" class="btn-del-row" onclick="hapusBaris(this)">X</button>
-                </td>
-            </tr>
-        </tbody>
-        <tfoot>
-            <tr id="totalRow" class="row-total"></tr>
-        </tfoot>
-    </table>
-
-    <button type="button" class="btn btn-add-row no-print" onclick="tambahBaris()">+ Tambah Baris Kotak</button>
-
-    <div class="footer-status">
-        <div>Total Data: <span id="totalData">1</span> Baris</div>
-        <div id="saveStatus">Menghubungkan ke Firebase...</div>
+    <div class="menu-bar no-print">
+        <div class="menu-item" onclick="buatFolderBaru()"><u>F</u>ile Baru (Folder)</div>
+        <div class="menu-item" onclick="buatFileBaru()"><u>D</u>okumen Baru (Tabel)</div>
+        <div class="menu-item" onclick="hapusItemTerpilih()"><u>H</u>apus Terpilih</div>
     </div>
 
-    <div style="text-align: right; margin-top: 20px;">
-        <button type="button" class="btn btn-print" onclick="window.print()">Cetak / Simpan ke PDF</button>
+    <div class="toolbar no-print">
+        <button class="btn-win95" onclick="navigasiKeAtas()">⬆️ Up</button>
+        <div style="width: 2px; border-left: 1px solid #808080; border-right: 1px solid #fff; height: 20px; margin: 0 5px;"></div>
+        <button class="btn-win95" onclick="buatFolderBaru()">📁 New Folder</button>
+        <button class="btn-win95" onclick="buatFileBaru()">📄 New File Tabel</button>
+        <button class="btn-win95" onclick="hapusItemTerpilih()">❌ Delete</button>
+    </div>
+
+    <div class="address-bar-container no-print">
+        <span style="font-size:11px; color:#555;">Address:</span>
+        <input type="text" id="addressInput" class="address-input" readonly value="C:\">
+    </div>
+
+    <div class="explorer-body">
+        <div class="left-panel" id="folderTreeView"></div>
+
+        <div class="right-panel" id="fileGridView" onclick="clearSelection(event)">
+            
+            <div id="tableEditorOverlay" class="table-editor-overlay">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:2px solid #d4d0c8; padding-bottom:5px;" class="no-print">
+                    <button class="btn-win95" onclick="tutupFileTabel()" style="font-weight:bold; background-color:#ffc107;">⬅️ Tutup File & Kembali ke Explorer</button>
+                    <span id="editorFileName" style="font-weight:bold; color:#000080;">Mengedit: -</span>
+                </div>
+
+                <div class="doc-title-container">
+                    <input type="text" id="docTitle" class="editable-title" value="LAPORAN REKAPITULASI DATA" oninput="triggerTableAutoSave()">
+                </div>
+
+                <div class="control-panel no-print">
+                    <div class="input-group">
+                        <input type="text" id="newColumnName" placeholder="Ketik nama Judul Kolom baru...">
+                        <select id="newColumnType">
+                            <option value="text">Teks Biasa</option>
+                            <option value="number">Nomor Saja</option>
+                            <option value="currency">Mata Uang (Rupiah)</option>
+                            <option value="date">Tanggal</option>
+                            <option value="status">Pilihan Status</option>
+                        </select>
+                        <button type="button" class="btn-win95" onclick="tambahKolomAwal()">+ Tambah Kolom</button>
+                    </div>
+                </div>
+
+                <table id="dynamicTable">
+                    <thead>
+                        <tr id="headerRow">
+                            <th style="width: 30px;" data-type="system">NO</th>
+                            <th data-type="text">TANGGAL</th>
+                            <th data-type="text">No Kontrak</th>
+                            <th class="action-col" style="width: 40px;" data-type="system">AKSI</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody"></tbody>
+                    <tfoot>
+                        <tr id="totalRow" class="row-total"></tr>
+                    </tfoot>
+                </table>
+
+                <button type="button" class="btn-win95 no-print" onclick="tambahBaris()">+ Tambah Baris Kotak</button>
+                <div style="text-align: right; margin-top: 15px;" class="no-print">
+                    <button type="button" class="btn-win95" onclick="window.print()" style="background-color:#28a745; color:white; padding:5px 15px;">🖨️ Cetak / Simpan ke PDF</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="status-bar no-print">
+        <div class="status-field" id="itemCountStatus">0 object(s)</div>
+        <div class="status-field" id="dbStatus" style="flex-grow: 2; color: #008000; font-weight: bold;">Menghubungkan ke server...</div>
     </div>
 </div>
 
 <script>
+    // ==========================================
+    // LOGIK MANAJEMEN WINDOWS EXPLORER JADUL
+    // ==========================================
+
+    function renderExplorer() {
+        renderFolderTree();
+        renderFileGrid();
+        updateAddressBar();
+    }
+
+    // Membangun Pohon Folder Panel Kiri
+    function renderFolderTree() {
+        const treeView = document.getElementById("folderTreeView");
+        treeView.innerHTML = `<div class="tree-item ${window.currentFolderId === 'root' ? 'active' : ''}" onclick="pindahFolder('root')">💻 My Cloud Database (C:)</div>`;
+        
+        const rootChildrenContainer = document.createElement("div");
+        rootChildrenContainer.className = "tree-children";
+        
+        // Cari folder tingkat utama (parent == root)
+        for (let fId in window.EXPLORER_DATA.folders) {
+            if (window.EXPLORER_DATA.folders[fId].parent === "root") {
+                buildTreeRow(fId, rootChildrenContainer);
+            }
+        }
+        treeView.appendChild(rootChildrenContainer);
+    }
+
+    function buildTreeRow(folderId, containerEl) {
+        const folder = window.EXPLORER_DATA.folders[folderId];
+        const row = document.createElement("div");
+        row.className = `tree-item ${window.currentFolderId === folderId ? 'active' : ''}`;
+        row.innerHTML = `📁 ${folder.name}`;
+        row.onclick = (e) => {
+            e.stopPropagation();
+            pindahFolder(folderId);
+        };
+        containerEl.appendChild(row);
+
+        // Cari anak dari folder ini (Sub-Folder)
+        const childrenContainer = document.createElement("div");
+        childrenContainer.className = "tree-children";
+        for (let fId in window.EXPLORER_DATA.folders) {
+            if (window.EXPLORER_DATA.folders[fId].parent === folderId) {
+                buildTreeRow(fId, childrenContainer);
+            }
+        }
+        containerEl.appendChild(childrenContainer);
+    }
+
+    // Membangun Grid File / Folder di Panel Kanan
+    function renderFileGrid() {
+        const gridView = document.getElementById("fileGridView");
+        
+        // Hapus item grid lama tanpa menyingkirkan elemen overlay editor tabel
+        const overlay = document.getElementById("tableEditorOverlay");
+        gridView.innerHTML = "";
+        gridView.appendChild(overlay);
+
+        let count = 0;
+
+        // Render Folder yang ada di dalam direktori saat ini
+        for (let fId in window.EXPLORER_DATA.folders) {
+            if (window.EXPLORER_DATA.folders[fId].parent === window.currentFolderId) {
+                count++;
+                const item = document.createElement("div");
+                item.className = `explorer-item ${window.selectedItemId === 'dir_' + fId ? 'selected' : ''}`;
+                item.innerHTML = `<div class="item-icon">📁</div><div class="item-name">${window.EXPLORER_DATA.folders[fId].name}</div>`;
+                item.onclick = (e) => { e.stopPropagation(); selectItem('dir_' + fId); };
+                item.ondblclick = () => { pindahFolder(fId); };
+                gridView.appendChild(item);
+            }
+        }
+
+        // Render File yang ada di dalam direktori saat ini
+        for (let fileId in window.EXPLORER_DATA.files) {
+            if (window.EXPLORER_DATA.files[fileId].folderId === window.currentFolderId) {
+                count++;
+                const item = document.createElement("div");
+                item.className = `explorer-item ${window.selectedItemId === 'file_' + fileId ? 'selected' : ''}`;
+                item.innerHTML = `<div class="item-icon">📄</div><div class="item-name">${window.EXPLORER_DATA.files[fileId].name}</div>`;
+                item.onclick = (e) => { e.stopPropagation(); selectItem('file_' + fileId); };
+                item.ondblclick = () => { bukaFileTabel(fileId); };
+                gridView.appendChild(item);
+            }
+        }
+
+        document.getElementById("itemCountStatus").innerText = `${count} object(s)`;
+    }
+
+    function pindahFolder(folderId) {
+        window.currentFolderId = folderId;
+        window.selectedItemId = null;
+        renderExplorer();
+    }
+
+    function selectItem(itemId) {
+        window.selectedItemId = itemId;
+        renderExplorer();
+    }
+
+    function clearSelection(e) {
+        window.selectedItemId = null;
+        renderExplorer();
+    }
+
+    function updateAddressBar() {
+        let path = "";
+        let current = window.currentFolderId;
+        while (current !== "root" && window.EXPLORER_DATA.folders[current]) {
+            path = "\\" + window.EXPLORER_DATA.folders[current].name + path;
+            current = window.EXPLORER_DATA.folders[current].parent;
+        }
+        document.getElementById("addressInput").value = "C:" + (path || "\\");
+    }
+
+    function navigasiKeAtas() {
+        if (window.currentFolderId === "root") return;
+        const currentFolder = window.EXPLORER_DATA.folders[window.currentFolderId];
+        if (currentFolder) {
+            pindahFolder(currentFolder.parent);
+        }
+    }
+
+    // FUNGSI BUAT FOLDER & FILE BARU
+    function buatFolderBaru() {
+        const nama = prompt("Masukkan nama Folder Mitra baru:");
+        if (!nama || nama.trim() === "") return;
+        const newId = "fld_" + Date.now();
+        window.EXPLORER_DATA.folders[newId] = {
+            name: nama.trim(),
+            parent: window.currentFolderId
+        };
+        saveExplorerToCloud("Folder baru berhasil dibuat.");
+    }
+
+    function buatFileBaru() {
+        const nama = prompt("Masukkan nama File Tagihan (.json):");
+        if (!nama || nama.trim() === "") return;
+        
+        let fixNama = nama.trim();
+        if(!fixNama.endsWith(".json")) fixNama += ".json";
+
+        const newFileId = "fil_" + Date.now();
+        window.EXPLORER_DATA.files[newFileId] = {
+            name: fixNama,
+            folderId: window.currentFolderId,
+            content: {
+                title: fixNama.replace(".json", "").toUpperCase(),
+                columns: [
+                    { name: "TANGGAL KELUAR", type: "date", width: "90px" },
+                    { name: "NO KONTRAK", type: "text", width: "" },
+                    { name: "TOTAL TAGIHAN", type: "currency", width: "" },
+                    { name: "STATUS", type: "status", width: "80px" }
+                ],
+                rows: [
+                    ["", "", "", "BELUM"]
+                ]
+            }
+        };
+        saveExplorerToCloud("File tabel baru berhasil dibuat.");
+    }
+
+    function hapusItemTerpilih() {
+        if (!window.selectedItemId) { alert("Pilih file atau folder yang ingin dihapus terlebih dahulu!"); return; }
+        if (!confirm("Apakah Anda yakin ingin menghapus item ini beserta seluruh isinya secara permanen?")) return;
+
+        if (window.selectedItemId.startsWith("dir_")) {
+            const id = window.selectedItemId.replace("dir_", "");
+            delete window.EXPLORER_DATA.folders[id];
+            // Bersihkan file yang yatim piatu di dalam folder tersebut
+            for (let f in window.EXPLORER_DATA.files) {
+                if (window.EXPLORER_DATA.files[f].folderId === id) delete window.EXPLORER_DATA.files[f];
+            }
+        } else if (window.selectedItemId.startsWith("file_")) {
+            const id = window.selectedItemId.replace("file_", "");
+            delete window.EXPLORER_DATA.files[id];
+        }
+
+        window.selectedItemId = null;
+        saveExplorerToCloud("Item berhasil dihapus.");
+    }
+
+
+    // ==========================================
+    // LOGIK EDITOR TABEL REKAP DINAMIS (INTEGRASI)
+    // ==========================================
+
+    function bukaFileTabel(fileId) {
+        window.activeOpenedFileId = fileId;
+        const file = window.EXPLORER_DATA.files[fileId];
+        document.getElementById("editorFileName").innerText = `💾 Mengedit Dokumen: [ ${file.name} ]`;
+        
+        // Tampilkan halaman overlay editor tabel
+        document.getElementById("tableEditorOverlay").style.display = "flex";
+        muatUlangTabelDariJSON(file.content);
+    }
+
+    function tutupFileTabel() {
+        document.getElementById("tableEditorOverlay").style.display = "none";
+        window.activeOpenedFileId = null;
+        renderExplorer();
+    }
+
+    // Jembatan Otomatis: Setiap kali tabel diketik, langsung lempar data terupdate ke struktur file di Firebase
+    let fileSaveTimeout;
+    function triggerTableAutoSave() {
+        if (!window.activeOpenedFileId) return;
+        document.getElementById("dbStatus").innerText = "Mengetik, mencadangkan data...";
+        
+        clearTimeout(fileSaveTimeout);
+        fileSaveTimeout = setTimeout(() => {
+            const dataTabelTerbaru = eksporStrukturTabelKeJSON();
+            window.EXPLORER_DATA.files[window.activeOpenedFileId].content = dataTabelTerbaru;
+            saveExplorerToCloud("Semua ketikan tabel Anda aman di cloud ✨");
+        }, 1000); // jeda 1 detik anti gedor server berlebih
+    }
+
+    // ENGINE TABEL DINAMIS (SAMA SEPERTI SEBELUMNYA DENGAN PENYESUAIAN AUTO-SAVE)
+    function generateCellHTML(cell, type, value) {
+        if (type === 'currency') {
+            cell.innerHTML = `<input type="text" class="table-input text-right" value="${value}" placeholder="0" oninput="formatRupiah(this)"><div class="print-text text-right">${value || 0}</div>`;
+        } else if (type === 'number') {
+            cell.innerHTML = `<input type="number" pattern="[0-9]*" inputmode="numeric" class="table-input text-center" value="${value}" placeholder="0" oninput="updatePrintText(this)"><div class="print-text text-center">${value || 0}</div>`;
+        } else if (type === 'date') {
+            cell.innerHTML = `<input type="date" class="table-input text-center" value="${value}" oninput="updatePrintText(this)"><div class="print-text text-center">${value}</div>`;
+        } else if (type === 'status') {
+            let sLunas = value === 'LUNAS' ? 'selected' : '';
+            let sProses = value === 'PROSES' ? 'selected' : '';
+            let sBelum = value === 'BELUM' ? 'selected' : '';
+            cell.innerHTML = `
+                <select class="table-select text-center" onchange="updatePrintText(this)">
+                    <option value="BELUM" ${sBelum}>🔴 BELUM</option>
+                    <option value="PROSES" ${sProses}>🟡 PROSES</option>
+                    <option value="LUNAS" ${sLunas}>🟢 LUNAS</option>
+                </select>
+                <div class="print-text text-center">${value || 'BELUM'}</div>`;
+        } else {
+            cell.innerHTML = `<input type="text" class="table-input" value="${value}" placeholder="" oninput="updatePrintText(this)"><div class="print-text">${value}</div>`;
+        }
+    }
+
     function updatePrintText(input) {
         var parentCell = input.parentElement;
         var printTextDiv = parentCell.querySelector('.print-text');
-        if (printTextDiv) {
-            printTextDiv.innerText = input.value;
-        }
-        if(typeof autoSaveData === 'function') autoSaveData(); 
+        if (printTextDiv) { printTextDiv.innerText = input.value; }
+        hitungTotalMataUangDanNomor();
+        triggerTableAutoSave();
     }
 
     function formatRupiah(input) {
         var value = input.value.replace(/\D/g, ""); 
-        if (value === "") {
-            input.value = "";
-            updatePrintText(input);
-            hitungTotalMataUang();
-            return;
-        }
+        if (value === "") { input.value = ""; updatePrintText(input); return; }
         input.value = parseInt(value, 10).toLocaleString('id-ID');
         updatePrintText(input);
-        hitungTotalMataUang(); 
-    }
-
-    function sesuaikanUkuranTabel() {
-        var headerRow = document.getElementById("headerRow");
-        var totalKolom = headerRow.cells.length - 2; 
-        var tabel = document.getElementById("dynamicTable");
-        var fontSize = 11; var padding = 6;
-        if (totalKolom > 10) { fontSize = 8; padding = 3; } 
-        else if (totalKolom > 8) { fontSize = 9; padding = 4; } 
-        else if (totalKolom > 6) { fontSize = 10; padding = 5; }
-        
-        var allCells = tabel.querySelectorAll("th, td");
-        allCells.forEach(function(cell) {
-            cell.style.fontSize = fontSize + "px";
-            cell.style.paddingTop = padding + "px";
-            cell.style.paddingBottom = padding + "px";
-        });
     }
 
     function rebuildFooter() {
         var headerRow = document.getElementById("headerRow");
         var totalRow = document.getElementById("totalRow");
-        if (!totalRow) return;
-        totalRow.innerHTML = ""; 
+        if (!totalRow) return; totalRow.innerHTML = ""; 
         var totalCols = headerRow.cells.length;
         var firstCell = totalRow.insertCell(0);
-        firstCell.className = "text-right";
-        firstCell.innerText = "TOTAL :";
+        firstCell.className = "text-right"; firstCell.innerText = "TOTAL :";
         
         for (var i = 1; i < totalCols; i++) {
             var cell = totalRow.insertCell(i);
             var colType = headerRow.cells[i].getAttribute('data-type');
             if (i === totalCols - 1) { cell.className = "action-col"; } 
-            else if (colType === 'currency') { cell.className = "text-right"; cell.innerText = "0"; } 
+            else if (colType === 'currency' || colType === 'number') { cell.className = "text-right"; cell.innerText = "0"; } 
             else { cell.innerText = ""; }
         }
-        hitungTotalMataUang();
+        hitungTotalMataUangDanNomor();
     }
 
     function tambahKolomAwal() {
@@ -446,39 +692,29 @@
                 <button class="btn-nav" onclick="geserKolom(this, -1)">◀</button>
                 <button class="btn-nav" onclick="geserKolom(this, 1)">▶</button>
                 <button class="btn-del-col" onclick="hapusKolomSpesifik(this)">X</button>
-            </div>
-        `;
+            </div>`;
         headerRow.insertBefore(th, headerRow.cells[totalCols - 1]);
 
         var tbodyRows = table.getElementsByTagName('tbody')[0].rows;
         for (var i = 0; i < tbodyRows.length; i++) {
             var cell = tbodyRows[i].insertCell(tbodyRows[i].cells.length - 1);
-            if (columnType === 'currency') {
-                cell.innerHTML = `<input type="text" class="table-input text-right" placeholder="0" oninput="formatRupiah(this)"><div class="print-text text-right">0</div>`;
-            } else if (columnType === 'date') {
-                cell.innerHTML = `<input type="date" class="table-input text-center" oninput="updatePrintText(this)"><div class="print-text text-center"></div>`;
-            } else {
-                cell.innerHTML = `<input type="text" class="table-input" placeholder="-" oninput="updatePrintText(this)"><div class="print-text">-</div>`;
-            }
+            generateCellHTML(cell, columnType, "");
         }
 
         document.getElementById("newColumnName").value = "";
         rebuildFooter();
         sesuaikanUkuranTabel();
-        if(typeof autoSaveData === 'function') autoSaveData();
+        triggerTableAutoSave();
     }
 
     function hapusKolomSpesifik(button) {
         if (confirm("Apakah Anda yakin ingin menghapus kolom ini?")) {
-            var th = button.closest('th');
-            var index = th.cellIndex;
+            var th = button.closest('th'); var index = th.cellIndex;
             var table = document.getElementById("dynamicTable");
             document.getElementById("headerRow").deleteCell(index);
             var tbodyRows = table.getElementsByTagName('tbody')[0].rows;
             for (var i = 0; i < tbodyRows.length; i++) { tbodyRows[i].deleteCell(index); }
-            rebuildFooter();
-            sesuaikanUkuranTabel();
-            if(typeof autoSaveData === 'function') autoSaveData();
+            rebuildFooter(); sesuaikanUkuranTabel(); triggerTableAutoSave();
         }
     }
 
@@ -497,8 +733,7 @@
             if (direction === 1) { row.insertBefore(row.cells[targetIndex], row.cells[index]); } 
             else { row.insertBefore(row.cells[index], row.cells[targetIndex]); }
         }
-        rebuildFooter();
-        if(typeof autoSaveData === 'function') autoSaveData();
+        rebuildFooter(); triggerTableAutoSave();
     }
 
     function tambahBaris() {
@@ -510,34 +745,22 @@
         for (var i = 0; i < totalCols; i++) {
             var cell = newRow.insertCell(i);
             var colType = headerRow.cells[i].getAttribute('data-type');
-            
-            if (i === 0) {
-                cell.className = "text-center row-number";
-            } else if (i === totalCols - 1) {
+            if (i === 0) { cell.className = "text-center row-number"; } 
+            else if (i === totalCols - 1) {
                 cell.className = "action-col text-center";
                 cell.innerHTML = `<button type="button" class="btn-del-row" onclick="hapusBaris(this)">X</button>`;
-            } else if (colType === 'currency') {
-                cell.innerHTML = `<input type="text" class="table-input text-right" placeholder="0" oninput="formatRupiah(this)"><div class="print-text text-right">0</div>`;
-            } else if (colType === 'date') {
-                cell.innerHTML = `<input type="date" class="table-input text-center" oninput="updatePrintText(this)"><div class="print-text text-center"></div>`;
-            } else {
-                cell.innerHTML = `<input type="text" class="table-input" placeholder="" oninput="updatePrintText(this)"><div class="print-text"></div>`;
-            }
+            } else { generateCellHTML(cell, colType, ""); }
         }
-        updateNomorDanTotal();
-        sesuaikanUkuranTabel();
-        if(typeof autoSaveData === 'function') autoSaveData();
+        updateNomorDanTotal(); sesuaikanUkuranTabel(); triggerTableAutoSave();
     }
 
     function hapusBaris(button) {
         var row = button.parentNode.parentNode;
         row.parentNode.removeChild(row);
-        updateNomorDanTotal();
-        hitungTotalMataUang();
-        if(typeof autoSaveData === 'function') autoSaveData();
+        updateNomorDanTotal(); hitungTotalMataUangDanNomor(); triggerTableAutoSave();
     }
 
-    function hitungTotalMataUang() {
+    function hitungTotalMataUangDanNomor() {
         var headerRow = document.getElementById("headerRow");
         var tbodyRows = document.getElementById("tableBody").rows;
         var totalRow = document.getElementById("totalRow");
@@ -546,7 +769,7 @@
 
         for (var colIndex = 1; colIndex < totalCols - 1; colIndex++) {
             var colType = headerRow.cells[colIndex].getAttribute('data-type');
-            if (colType === 'currency') {
+            if (colType === 'currency' || colType === 'number') {
                 var grandTotalKolom = 0;
                 for (var rowIndex = 0; rowIndex < tbodyRows.length; rowIndex++) {
                     var inputEl = tbodyRows[rowIndex].cells[colIndex].querySelector('input');
@@ -555,7 +778,7 @@
                         grandTotalKolom += angkaBersih;
                     }
                 }
-                totalRow.cells[colIndex].innerText = grandTotalKolom.toLocaleString('id-ID');
+                totalRow.cells[colIndex].innerText = colType === 'currency' ? grandTotalKolom.toLocaleString('id-ID') : grandTotalKolom;
             }
         }
     }
@@ -563,7 +786,16 @@
     function updateNomorDanTotal() {
         var rows = document.getElementById("tableBody").rows;
         for (var i = 0; i < rows.length; i++) { rows[i].querySelector('.row-number').innerText = i + 1; }
-        document.getElementById("totalData").innerText = rows.length;
+    }
+
+    function sesuaikanUkuranTabel() {
+        var headerRow = document.getElementById("headerRow");
+        var totalKolom = headerRow.cells.length - 2; 
+        var tabel = document.getElementById("dynamicTable");
+        var fontSize = 11; var padding = 5;
+        if (totalKolom > 8) { fontSize = 9; padding = 3; }
+        var allCells = tabel.querySelectorAll("th, td");
+        allCells.forEach(function(cell) { cell.style.fontSize = fontSize + "px"; cell.style.padding = padding + "px"; });
     }
 
     function eksporStrukturTabelKeJSON() {
@@ -579,21 +811,20 @@
                 width: headerRow.cells[i].style.width || ""
             });
         }
-
         const rows = [];
         for (let i = 0; i < tbodyRows.length; i++) {
             const rowData = [];
             for (let j = 1; j < tbodyRows[i].cells.length - 1; j++) {
-                const input = tbodyRows[i].cells[j].querySelector('input');
+                const input = tbodyRows[i].cells[j].querySelector('input, select');
                 rowData.push(input ? input.value : "");
             }
             rows.push(rowData);
         }
-
         return { title, columns, rows };
     }
 
     function muatUlangTabelDariJSON(data) {
+        if(!data) return;
         document.getElementById("docTitle").value = data.title || "LAPORAN REKAPITULASI DATA";
         const headerRow = document.getElementById("headerRow");
         headerRow.innerHTML = `<th style="width: 30px;" data-type="system">NO</th><th class="action-col" style="width: 40px;" data-type="system">AKSI</th>`;
@@ -615,7 +846,6 @@
 
         const tbody = document.getElementById("tableBody");
         tbody.innerHTML = "";
-        
         if (data.rows) {
             data.rows.forEach((row, rIndex) => {
                 const newRow = tbody.insertRow(-1);
@@ -626,14 +856,7 @@
                 row.forEach((val, cIndex) => {
                     const cell = newRow.insertCell(cIndex + 1);
                     const colType = data.columns[cIndex].type;
-                    
-                    if (colType === 'currency') {
-                        cell.innerHTML = `<input type="text" class="table-input text-right" value="${val}" placeholder="0" oninput="formatRupiah(this)"><div class="print-text text-right">${val}</div>`;
-                    } else if (colType === 'date') {
-                        cell.innerHTML = `<input type="date" class="table-input text-center" value="${val}" oninput="updatePrintText(this)"><div class="print-text text-center">${val}</div>`;
-                    } else {
-                        cell.innerHTML = `<input type="text" class="table-input" value="${val}" placeholder="" oninput="updatePrintText(this)"><div class="print-text">${val}</div>`;
-                    }
+                    generateCellHTML(cell, colType, val);
                 });
 
                 const cellAksi = newRow.insertCell(newRow.cells.length);
@@ -641,12 +864,8 @@
                 cellAksi.innerHTML = `<button type="button" class="btn-del-row" onclick="hapusBaris(this)">X</button>`;
             });
         }
-        
-        updateNomorDanTotal();
-        rebuildFooter();
-        sesuaikanUkuranTabel();
+        updateNomorDanTotal(); rebuildFooter(); sesuaikanUkuranTabel();
     }
 </script>
-
 </body>
 </html>
