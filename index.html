@@ -2,12 +2,12 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Windows 95 Desktop & Cloud Explorer</title>
     <style>
         /* BASE & DESKTOP WALLPAPER CLASSIC WINDOWS 95 */
         body {
-            background-color: #3a6ea5; /* Teal khas Win95 */
+            background-color: #3a6ea5; 
             font-family: "Tahoma", "Arial", sans-serif;
             font-size: 12px;
             margin: 0;
@@ -78,7 +78,7 @@
             gap: 4px;
         }
 
-        /* KOMPONEN JENDELA WINDOWS 95 (WINDOW BOX SYSTEM) */
+        /* KOMPONEN JENDELA WINDOWS 95 - RESPONSIVE OPTIMIZED */
         .win95-window {
             background-color: #d4d0c8;
             border-top: 2px solid #fff;
@@ -94,13 +94,13 @@
             z-index: 10;
         }
 
-        /* Jendela Utama Explorer & Editor */
+        /* Jendela Default di Desktop (PC) */
         #mainExplorerWindow {
             width: 95%;
             height: 85%;
             top: 5%;
             left: 2.5%;
-            display: flex; /* Terbuka di awal */
+            display: flex;
         }
 
         #tableEditorWindow {
@@ -108,21 +108,28 @@
             height: 80%;
             top: 10%;
             left: 5%;
-            display: none; /* Tersembunyi sebelum file dibuka */
+            display: none;
+        }
+
+        /* OTOMATIS JADI FULLSCREEN JIKA DIBUKA DI HP */
+        @media (max-width: 768px) {
+            #mainExplorerWindow, #tableEditorWindow {
+                width: 100% !important;
+                height: calc(100% - 38px) !important;
+                top: 0 !important;
+                left: 0 !important;
+            }
         }
 
         /* TITLE BAR & UTILITY BUTTONS */
         .title-bar {
             background: linear-gradient(90deg, #000080, #1084d0);
             color: white;
-            padding: 3px 4px 3px 6px;
+            padding: 4px 6px;
             font-weight: bold;
             display: flex;
             justify-content: space-between;
             align-items: center;
-        }
-        .title-bar.inactive {
-            background: linear-gradient(90deg, #808080, #b5b5b5);
         }
         .title-bar-text {
             display: flex;
@@ -134,7 +141,7 @@
         }
         .title-bar-controls {
             display: flex;
-            gap: 2px;
+            gap: 3px;
         }
         .btn-control {
             background-color: #d4d0c8;
@@ -143,11 +150,11 @@
             border-right: 1px solid #404040;
             border-bottom: 1px solid #404040;
             box-shadow: 0.5px 0.5px 0 #000;
-            font-size: 9px;
+            font-size: 10px;
             font-weight: bold;
             color: black;
-            width: 14px;
-            height: 14px;
+            width: 16px;
+            height: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -162,8 +169,8 @@
             box-shadow: none;
         }
 
-        /* MENU, TOOLBAR, & ADRESS */
-        .menu-bar { display: flex; gap: 10px; padding: 4px 6px; border-bottom: 1px solid #808080; }
+        /* MENU, TOOLBAR, & ADDRESS */
+        .menu-bar { display: flex; gap: 12px; padding: 4px 6px; border-bottom: 1px solid #808080; }
         .menu-item { cursor: pointer; }
         .toolbar { display: flex; gap: 4px; padding: 4px; border-bottom: 2px solid #808080; flex-wrap: wrap; }
         
@@ -173,7 +180,7 @@
             border-left: 1px solid #fff;
             border-right: 1px solid #808080;
             border-bottom: 1px solid #808080;
-            padding: 3px 6px;
+            padding: 4px 8px;
             cursor: pointer;
             font-family: inherit;
             font-size: 11px;
@@ -182,7 +189,7 @@
         .btn-win95:disabled { color: #808080; opacity: 0.6; cursor: not-allowed; }
 
         .address-bar-container { display: flex; align-items: center; gap: 5px; padding: 4px; border-bottom: 2px solid #fff; }
-        .address-input { flex-grow: 1; background-color: #fff; border-top: 2px solid #808080; border-left: 2px solid #808080; border-right: 2px solid #fff; border-bottom: 2px solid #fff; padding: 2px; font-size: 11px; outline: none; }
+        .address-input { flex-grow: 1; background-color: #fff; border-top: 2px solid #808080; border-left: 2px solid #808080; border-right: 2px solid #fff; border-bottom: 2px solid #fff; padding: 3px; font-size: 11px; outline: none; }
 
         /* BODY CONTAINER INTERIOR WORKSPACE */
         .window-body {
@@ -199,19 +206,34 @@
         }
 
         .left-panel { width: 160px; border-right: 2px solid #d4d0c8; overflow-y: auto; padding: 5px; background: #fff; }
-        @media (max-width: 600px) { .left-panel { display: none; } }
-        .right-panel { flex-grow: 1; overflow-y: auto; padding: 10px; display: flex; flex-wrap: wrap; gap: 12px; align-content: flex-start; background: #fff; }
+        @media (max-width: 600px) { .left-panel { display: none; } } /* Sembunyikan sidebar folder di HP agar lega */
+        
+        .right-panel { 
+            flex-grow: 1; 
+            overflow-y: auto; 
+            padding: 10px; 
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 15px; 
+            align-content: flex-start; 
+            background: #fff; 
+            -webkit-overflow-scrolling: touch;
+        }
 
-        /* ITEMS GRID STYLING */
-        .explorer-item { width: 75px; display: flex; flex-direction: column; align-items: center; text-align: center; cursor: pointer; padding: 4px; }
+        /* ITEMS GRID STYLING - LEBIH MUDAH DIKLIK DI HP */
+        .explorer-item { 
+            width: 75px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            text-align: center; 
+            cursor: pointer; 
+            padding: 6px; 
+            border: 1px solid transparent;
+        }
         .explorer-item.selected { background-color: #000080 !important; color: white !important; }
-        .item-icon { font-size: 30px; margin-bottom: 2px; }
+        .item-icon { font-size: 32px; margin-bottom: 4px; }
         .item-name { font-size: 11px; word-wrap: break-word; max-width: 100%; }
-
-        /* TREE ITEM INDENT */
-        .tree-item { cursor: pointer; padding: 2px; display: flex; align-items: center; gap: 4px; }
-        .tree-item.active { background-color: #000080; color: white; }
-        .tree-children { padding-left: 12px; }
 
         /* WINDOW SCROLLABLE AREA EDITOR TABEL */
         .scrollable-editor-content {
@@ -223,41 +245,50 @@
         }
 
         /* REKAP TABEL STYLE */
-        .doc-title-container { margin-bottom: 8px; }
-        .editable-title { font-size: 15px; font-weight: bold; border: none; border-bottom: 1px dashed #808080; width: 100%; outline: none; }
-        .control-panel { background-color: #f0f0f0; padding: 6px; border: 1px solid #808080; margin-bottom: 10px; }
-        .input-group { display: flex; gap: 5px; align-items: center; flex-wrap: wrap; }
-        .input-group input, .input-group select { padding: 3px; font-size: 11px; }
+        .doc-title-container { margin-bottom: 10px; }
+        .editable-title { font-size: 16px; font-weight: bold; border: none; border-bottom: 1px dashed #808080; width: 100%; outline: none; padding: 2px 0; }
+        .control-panel { background-color: #f0f0f0; padding: 8px; border: 1px solid #808080; margin-bottom: 12px; }
+        .input-group { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+        .input-group input, .input-group select { padding: 4px; font-size: 12px; }
 
-        table { width: 100%; border-collapse: collapse; margin-bottom: 10px; background-color: #fff; }
-        th, td { border: 1px solid #000; padding: 5px; font-size: 11px; vertical-align: middle; }
+        /* Pembungkus Tabel Agar Bisa Digeser Kanan-Kiri di Layar Kecil HP */
+        .table-responsive-container {
+            width: 100%;
+            overflow-x: auto;
+            margin-bottom: 10px;
+            border: 1px solid #808080;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        table { width: 100%; border-collapse: collapse; background-color: #fff; min-width: 450px; }
+        th, td { border: 1px solid #000; padding: 6px; font-size: 12px; vertical-align: middle; }
         th { background-color: #d4d0c8; font-weight: bold; text-align: center; }
 
         .table-input, .table-select {
-            width: 100%; box-sizing: border-box; border: 1px solid #ccc; padding: 3px; font-size: 11px; background-color: #fff;
+            width: 100%; box-sizing: border-box; border: 1px solid #ccc; padding: 4px; font-size: 12px; background-color: #fff;
         }
 
         .text-center { text-align: center; }
         .text-right { text-align: right; }
         .row-total { background-color: #e6e6e6; font-weight: bold; }
-        .col-controls { margin-top: 3px; display: flex; justify-content: center; gap: 2px; }
-        .btn-nav { background: #d4d0c8; border: 1px solid #808080; font-size: 8px; cursor: pointer; }
-        .btn-del-col { background-color: #ffc107; font-size: 8px; border: 1px solid #808080; cursor: pointer; }
-        .btn-del-row { background-color: #dc3545; color: white; border: 1px solid #000; padding: 1px 4px; cursor: pointer; }
+        .col-controls { margin-top: 4px; display: flex; justify-content: center; gap: 2px; }
+        .btn-nav { background: #d4d0c8; border: 1px solid #808080; font-size: 9px; cursor: pointer; padding: 1px 3px; }
+        .btn-del-col { background-color: #ffc107; font-size: 9px; border: 1px solid #808080; cursor: pointer; padding: 1px 3px; }
+        .btn-del-row { background-color: #dc3545; color: white; border: 1px solid #000; padding: 2px 6px; cursor: pointer; font-weight: bold; }
 
         /* STATUS BAR WINDOW BOX */
-        .status-bar { background-color: #d4d0c8; border-top: 2px solid #808080; padding: 2px; display: flex; font-size: 11px; gap: 4px; }
-        .status-field { background-color: #d4d0c8; border-top: 1px solid #808080; border-left: 1px solid #808080; border-right: 1px solid #fff; border-bottom: 1px solid #fff; padding: 2px 4px; }
+        .status-bar { background-color: #d4d0c8; border-top: 2px solid #808080; padding: 3px; display: flex; font-size: 11px; gap: 4px; }
+        .status-field { background-color: #d4d0c8; border-top: 1px solid #808080; border-left: 1px solid #808080; border-right: 1px solid #fff; border-bottom: 1px solid #fff; padding: 2px 6px; }
 
         .print-text { display: none; }
         @media print {
             body { background: none; overflow: visible; }
             .win95-window, .no-print, .control-panel, .col-controls, .btn-del-row, .toolbar, .title-bar, .status-bar, .taskbar, .desktop-area { display: none !important; }
             #tableEditorWindow { display: flex !important; position: static; padding: 0; width: 100%; height: auto; border: none; box-shadow: none; }
-            .window-body, .scrollable-editor-content { border: none; padding: 0; overflow: visible; }
+            .window-body, .scrollable-editor-content, .table-responsive-container { border: none; padding: 0; overflow: visible; }
             input.table-input, select.table-select { display: none !important; }
             .print-text { display: block !important; white-space: normal !important; word-wrap: break-word !important; }
-            table { width: 100% !important; }
+            table { width: 100% !important; min-width: 100% !important; }
         }
     </style>
 
@@ -357,7 +388,7 @@
 
         <div class="status-bar no-print">
             <div class="status-field" id="itemCountStatus" style="width:100px;">0 OBJECT(S)</div>
-            <div class="status-field" id="dbStatus" style="flex-grow:2; color:green; font-weight:bold;">Sistem Aktif</div>
+            <div class="status-field" id="dbStatus" style="flex-grow:2; color:green; font-weight:bold;">Sistem Ready</div>
         </div>
     </div>
 
@@ -388,35 +419,37 @@
                             <option value="date">Tanggal</option>
                             <option value="status">Pilihan Status</option>
                         </select>
-                        <button type="button" class="btn-win95" onclick="tambahKolomAwal()">+ Tambah Kolom</button>
+                        <button type="button" class="btn-win95" onclick="tambahKolomAwal()">+ Kolom</button>
                     </div>
                 </div>
 
-                <table id="dynamicTable">
-                    <thead>
-                        <tr id="headerRow">
-                            <th style="width:30px;" data-type="system">NO</th>
-                            <th data-type="text">JUDUL KOLOM</th>
-                            <th class="action-col" style="width:40px;" data-type="system">AKSI</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tableBody"></tbody>
-                    <tfoot>
-                        <tr id="totalRow" class="row-total"></tr>
-                    </tfoot>
-                </table>
+                <div class="table-responsive-container">
+                    <table id="dynamicTable">
+                        <thead>
+                            <tr id="headerRow">
+                                <th style="width:30px;" data-type="system">NO</th>
+                                <th data-type="text">JUDUL KOLOM</th>
+                                <th class="action-col" style="width:40px;" data-type="system">AKSI</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody"></tbody>
+                        <tfoot>
+                            <tr id="totalRow" class="row-total"></tr>
+                        </tfoot>
+                    </table>
+                </div>
 
                 <button type="button" class="btn-win95 no-print" onclick="tambahBaris()">+ Tambah Baris Kotak</button>
                 
-                <div style="text-align: right; margin-top:10px;" class="no-print">
-                    <button type="button" class="btn-win95" onclick="window.print()" style="background-color:#28a745; color:white;">🖨️ Cetak ke PDF</button>
+                <div style="text-align: right; margin-top:15px;" class="no-print">
+                    <button type="button" class="btn-win95" onclick="window.print()" style="background-color:#28a745; color:white; font-weight:bold;">🖨️ Cetak ke PDF</button>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="taskbar no-print">
-        <button class="btn-win95 btn-start" onclick="alert('Windows 95 Cloud System v2.0 - Vena-X')">💾 Start</button>
+        <button class="btn-win95 btn-start" onclick="bukaJendelaWindow('mainExplorerWindow')">💾 Start</button>
         <div style="border-left:1px solid #808080; border-right:1px solid #fff; height:22px; margin:0 2px;"></div>
         <div style="font-size:11px; margin-left:auto; background: #d4d0c8; padding:2px 6px; border-top:1px solid #808080; border-left:1px solid #808080; border-bottom:1px solid #fff; border-right:1px solid #fff;">⏱️ 2026</div>
     </div>
@@ -506,6 +539,13 @@
                 item.innerHTML = `<div class="item-icon">📁</div><div class="item-name">${window.EXPLORER_DATA.folders[fId].name}</div>`;
                 item.onclick = (e) => { e.stopPropagation(); selectItem('dir_' + fId); };
                 item.ondblclick = () => pindahFolder(fId);
+                // Touch support untuk HP agar klik ganda lancar
+                item.addEventListener('touchend', (e) => {
+                    let now = new Date().getTime();
+                    let lastTouch = item.dataset.lastTouch || 0;
+                    if(now - lastTouch < 300) { pindahFolder(fId); }
+                    item.dataset.lastTouch = now;
+                });
                 gridView.appendChild(item);
             }
         }
@@ -518,6 +558,13 @@
                 item.innerHTML = `<div class="item-icon">📄</div><div class="item-name">${window.EXPLORER_DATA.files[fileId].name}</div>`;
                 item.onclick = (e) => { e.stopPropagation(); selectItem('file_' + fileId); };
                 item.ondblclick = () => bukaFileTabel(fileId);
+                // Touch support untuk HP
+                item.addEventListener('touchend', (e) => {
+                    let now = new Date().getTime();
+                    let lastTouch = item.dataset.lastTouch || 0;
+                    if(now - lastTouch < 300) { bukaFileTabel(fileId); }
+                    item.dataset.lastTouch = now;
+                });
                 gridView.appendChild(item);
             }
         }
