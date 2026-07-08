@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rekap Data Super Dinamis</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            color: #000;
+            background-color: #f9f9f9;
+        }
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px;
+            background: #fff;
+            border: 1px dashed #ccc;
+            box-sizing: border-box;
+        }
+        
+        .space-for-kop {
+            height: 150px;
+            display: none;
+        }
+
+        /* Desain Judul yang Bisa Diedit Langsung */
+        .doc-title-container {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .editable-title {
+            font-size: 18px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-align: center;
+            width: 80%;
+            border: 1px dashed #007bff;
+            padding: 5px;
+            outline: none;
+            font-family: inherit;
+        }
+        .editable-title:focus {
+            background-color: #f0f7ff;
+            border: 1px solid #007bff;
+        }
+
+        .control-panel {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border: 1px dashed #007bff;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+        .control-panel h3 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            color: #007bff;
+        }
+        .input-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .input-group input, .input-group select {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+        .input-group input { flex-grow: 1; }
+
+        /* Tabel Utama yang Ukurannya Fleksibel */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+            table-layout: fixed; /* Memaksa kolom berbagi ruang secara adil */
+        }
+        th, td {
+            border: 1px solid #000;
+            padding: 8px 4px;
+            font-size: 12px; /* Nilai bawaan, akan mengecil otomatis via JS */
+            vertical-align: middle;
+            word-wrap: break-word;
+            overflow: hidden;
+        }
+        th {
+            background-color: #f2f2f2;
+            text-align: center;
+            font-weight: bold;
+            position: relative;
+        }
+        
+        .table-input {
+            width: 100%;
+            box-sizing: border-box;
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: inherit; /* Ikut mengecil sesuai ukuran kolom */
+            font-family: inherit;
+        }
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        
+        .row-total {
+            background-color: #f9f9f9;
+            font-weight: bold;
+        }
+
+        /* Navigasi Tombol Kolom */
+        .col-controls {
+            margin-top: 5px;
+            display: flex;
+            justify-content: center;
+            gap: 2px;
+        }
+        .btn-nav {
+            background: #fff;
+            border: 1px solid #000;
+            padding: 1px 3px;
+            font-size: 9px;
+            cursor: pointer;
+            border-radius: 2px;
+        }
+        .btn-nav:hover { background: #e0e0e0; }
+        
+        .btn {
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            border: 1px solid #000;
+            border-radius: 4px;
+        }
+        .btn-add-row { background-color: #007bff; color: white; border: none; }
+        .btn-action { background-color: #6c757d; color: white; border: none; }
+        .btn-print { background-color: #28a745; color: white; border: none; padding: 10px 20px; font-size: 14px;}
+        
+        .btn-del-row {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 2px 6px;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+        .btn-del-col {
+            background-color: #ffc107;
+            color: black;
+            border: 1px solid #000;
+            padding: 1px 3px;
+            font-size: 9px;
+            cursor: pointer;
+            border-radius: 2px;
+        }
+
+        .footer-status {
+            font-size: 13px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        /* Aturan Cetak PDF Kertas */
+        @media print {
+            body { padding: 0; background: none; }
+            .container { border: none; padding: 0; width: 100%; max-width: 100%; }
+            .space-for-kop { display: block !important; }
+            .editable-title { border: none !important; padding: 0; width: 100%; } /* Hilangkan garis kotak judul saat di-print */
+            .no-print, .control-panel, .btn-del-row, .col-controls, .btn-add-row, .btn-print, .action-col { 
+                display: none !important; 
+            }
+            input { border: none !important; background: transparent !important; }
+            th { background-color: #f2f2f2 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .row-total { background-color: #f9f9f9 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="space-for-kop"></div>
+
+    <div class="doc-title-container">
+        <input type="text" class="editable-title" value="LAPORAN REKAPITULASI DATA" title="Klik untuk mengubah judul">
+    </div>
+
+    <div class="control-panel no-print">
+        <h3>Fitur Pengatur Kolom Atas</h3>
+        <div class="input-group">
+            <input type="text" id="newColumnName" placeholder="Ketik nama Judul Kolom baru...">
+            
+            <select id="newColumnType">
+                <option value="text">Teks Biasa</option>
+                <option value="currency">Mata Uang (Rupiah/Total Otomatis)</option>
+                <option value="date">Tanggal (Kalender)</option>
+            </select>
+            
+            <button type="button" class="btn btn-action" onclick="tambahKolomAwal()">+ Tambah Kolom Baru</button>
+        </div>
+    </div>
+
+    <table id="dynamicTable">
+        <thead>
+            <tr id="headerRow">
+                <th style="width: 40px;" data-type="system">NO</th>
+                <th data-type="text">TANGGAL
+                    <div class="col-controls no-print">
+                        <button class="btn-nav" onclick="geserKolom(this, -1)">◀</button>
+                        <button class="btn-nav" onclick="geserKolom(this, 1)">▶</button>
+                        <button class="btn-del-col" onclick="hapusKolomSpesifik(this)">X</button>
+                    </div>
+                </th>
+                <th data-type="text">TANGGAL KELUAR ABSAH
+                    <div class="col-controls no-print">
+                        <button class="btn-nav" onclick="geserKolom(this, -1)">◀</button>
+                        <button class="btn-nav" onclick="geserKolom(this, 1)">▶</button>
+                        <button class="btn-del-col" onclick="hapusKolomSpesifik(this)">X</button>
+                    </div>
+                </th>
+                <th data-type="text">No Kontrak
+                    <div class="col-controls no-print">
+                        <button class="btn-nav" onclick="geserKolom(this, -1)">◀</button>
+                        <button class="btn-nav" onclick="geserKolom(this, 1)">▶</button>
+                        <button class="btn-del-col" onclick="hapusKolomSpesifik(this)">X</button>
+                    </div>
+                </th>
+                <th data-type="text">NO POLISI
+                    <div class="col-controls no-print">
+                        <button class="btn-nav" onclick="geserKolom(this, -1)">◀</button>
+                        <button class="btn-nav" onclick="geserKolom(this, 1)">▶</button>
+                        <button class="btn-del-col" onclick="hapusKolomSpesifik(this)">X</button>
+                    </div>
+                </th>
+                <th data-type="text">NO BPKB
+                    <div class="col-controls no-print">
+                        <button class="btn-nav" onclick="geserKolom(this, -1)">◀</button>
+                        <button class="btn-nav" onclick="geserKolom(this, 1)">▶</button>
+                        <button class="btn-del-col" onclick="hapusKolomSpesifik(this)">X</button>
+                    </div>
+                </th>
+                <th data-type="text">NAMA BPKB
+                    <div class="col-controls no-print">
+                        <button class="btn-nav" onclick="geserKolom(this, -1)">◀</button>
+                        <button class="btn-nav" onclick="geserKolom(this, 1)">▶</button>
+                        <button class="btn-del-col" onclick="hapusKolomSpesifik(this)">X</button>
+                    </div>
+                </th>
+                <th class="action-col" style="width: 50px;" data-type="system">AKSI</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="text-center row-number">1</td>
+                <td><input type="text" class="table-input text-center" placeholder="26-May-26"></td>
+                <td><input type="text" class="table-input text-center" placeholder="03-Jun-26"></td>
+                <td><input type="text" class="table-input" placeholder="061826000379"></td>
+                <td><input type="text" class="table-input" placeholder="BK1701LAJ"></td>
+                <td><input type="text" class="table-input" placeholder="S-06712388"></td>
+                <td><input type="text" class="table-input" placeholder="MARISCA ROSElina..."></td>
+                <td class="action-col text-center">
+                    <button type="button" class="btn-del-row" onclick="hapusBaris(this)">X</button>
+                </td>
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr id="totalRow" class="row-total">
+                </tr>
+        </tfoot>
+    </table>
+
+    <button type="button" class="btn btn-add-row no-print" onclick="tambahBaris()">+ Tambah Baris Kotak</button>
+
+    <div class="footer-status">
+        Total Data: <span id="totalData">1</span> Baris
+    </div>
+
+    <div style="text-align: right; margin-top: 20px;">
+        <button type="button" class="btn btn-print" onclick="window.print()">Cetak / Simpan ke PDF</button>
+    </div>
+</div>
+
+<script>
+    window.onload = function() {
+        rebuildFooter();
+        sesuaikanUkuranTabel();
+    };
+
+    function formatRupiah(input) {
+        var value = input.value.replace(/\D/g, ""); 
+        if (value === "") {
+            input.value = "";
+            hitungTotalMataUang();
+            return;
+        }
+        input.value = parseInt(value, 10).toLocaleString('id-ID');
+        hitungTotalMataUang(); 
+    }
+
+    // OTOMATISASI UKURAN HURUF AGAR TIDAK TERPOTONG SAAT PRINT
+    function sesuaikanUkuranTabel() {
+        var headerRow = document.getElementById("headerRow");
+        var totalKolom = headerRow.cells.length - 2; // Abaikan NO dan AKSI
+        var tabel = document.getElementById("dynamicTable");
+        
+        var fontSize = 12; // Ukuran standar bawaan
+        var padding = 8;
+        
+        // Aturan penurunan ukuran otomatis berdasarkan jumlah kolom aktif
+        if (totalKolom > 10) {
+            fontSize = 9;
+            padding = 4;
+        } else if (totalKolom > 8) {
+            fontSize = 10;
+            padding = 5;
+        } else if (totalKolom > 6) {
+            fontSize = 11;
+            padding = 6;
+        }
+        
+        // Terapkan ukuran baru ke semua kotak isi tabel
+        var allCells = tabel.querySelectorAll("th, td");
+        allCells.forEach(function(cell) {
+            cell.style.fontSize = fontSize + "px";
+            cell.style.paddingTop = padding + "px";
+            cell.style.paddingBottom = padding + "px";
+        });
+    }
+
+    function rebuildFooter() {
+        var headerRow = document.getElementById("headerRow");
+        var totalRow = document.getElementById("totalRow");
+        totalRow.innerHTML = ""; 
+
+        var totalCols = headerRow.cells.length;
+        
+        var firstCell = totalRow.insertCell(0);
+        firstCell.className = "text-right";
+        firstCell.innerText = "TOTAL :";
+        
+        for (var i = 1; i < totalCols; i++) {
+            var cell = totalRow.insertCell(i);
+            var colType = headerRow.cells[i].getAttribute('data-type');
+            
+            if (i === totalCols - 1) {
+                cell.className = "action-col";
+            } else if (colType === 'currency') {
+                cell.className = "text-right";
+                cell.innerText = "0";
+            } else {
+                cell.innerText = "";
+            }
+        }
+        hitungTotalMataUang();
+    }
+
+    function tambahKolomAwal() {
+        var columnName = document.getElementById("newColumnName").value.trim();
+        var columnType = document.getElementById("newColumnType").value;
+        
+        if (columnName === "") {
+            alert("Silakan isi nama judul kolom terlebih dahulu!");
+            return;
+        }
+
+        var table = document.getElementById("dynamicTable");
+        var headerRow = document.getElementById("headerRow");
+        var totalCols = headerRow.cells.length;
+
+        var th = document.createElement('th');
+        th.setAttribute('data-type', columnType); 
+        th.innerHTML = columnName + `
+            <div class="col-controls no-print">
+                <button class="btn-nav" onclick="geserKolom(this, -1)">◀</button>
+                <button class="btn-nav" onclick="geserKolom(this, 1)">▶</button>
+                <button class="btn-del-col" onclick="hapusKolomSpesifik(this)">X</button>
+            </div>
+        `;
+        headerRow.insertBefore(th, headerRow.cells[totalCols - 1]);
+
+        var tbodyRows = table.getElementsByTagName('tbody')[0].rows;
+        for (var i = 0; i < tbodyRows.length; i++) {
+            var cell = tbodyRows[i].insertCell(tbodyRows[i].cells.length - 1);
+            if (columnType === 'currency') {
+                cell.innerHTML = `<input type="text" class="table-input text-right" placeholder="0" oninput="formatRupiah(this)">`;
+            } else if (columnType === 'date') {
+                cell.innerHTML = `<input type="date" class="table-input text-center">`;
+            } else {
+                cell.innerHTML = `<input type="text" class="table-input" placeholder="-">`;
+            }
+        }
+
+        document.getElementById("newColumnName").value = "";
+        rebuildFooter();
+        sesuaikanUkuranTabel();
+    }
+
+    function hapusKolomSpesifik(button) {
+        if (confirm("Apakah Anda yakin ingin menghapus kolom ini?")) {
+            var th = button.closest('th');
+            var index = th.cellIndex;
+            var table = document.getElementById("dynamicTable");
+
+            document.getElementById("headerRow").deleteCell(index);
+
+            var tbodyRows = table.getElementsByTagName('tbody')[0].rows;
+            for (var i = 0; i < tbodyRows.length; i++) {
+                tbodyRows[i].deleteCell(index);
+            }
+
+            rebuildFooter();
+            sesuaikanUkuranTabel();
+        }
+    }
+
+    function geserKolom(button, direction) {
+        var th = button.closest('th');
+        var index = th.cellIndex;
+        var headerRow = document.getElementById("headerRow");
+        var targetIndex = index + direction;
+
+        if (targetIndex <= 0 || targetIndex >= headerRow.cells.length - 1) {
+            return; 
+        }
+
+        if (direction === 1) {
+            headerRow.insertBefore(headerRow.cells[targetIndex], th);
+        } else {
+            headerRow.insertBefore(th, headerRow.cells[targetIndex]);
+        }
+
+        var table = document.getElementById("dynamicTable");
+        var tbodyRows = table.getElementsByTagName('tbody')[0].rows;
+        for (var i = 0; i < tbodyRows.length; i++) {
+            var row = tbodyRows[i];
+            if (direction === 1) {
+                row.insertBefore(row.cells[targetIndex], row.cells[index]);
+            } else {
+                row.insertBefore(row.cells[index], row.cells[targetIndex]);
+            }
+        }
+
+        rebuildFooter();
+    }
+
+    function tambahBaris() {
+        var headerRow = document.getElementById("headerRow");
+        var tbody = document.getElementById("dynamicTable").getElementsByTagName('tbody')[0];
+        var newRow = tbody.insertRow(-1);
+        var totalCols = headerRow.cells.length;
+
+        for (var i = 0; i < totalCols; i++) {
+            var cell = newRow.insertCell(i);
+            var colType = headerRow.cells[i].getAttribute('data-type');
+            
+            if (i === 0) {
+                cell.className = "text-center row-number";
+            } else if (i === totalCols - 1) {
+                cell.className = "action-col text-center";
+                cell.innerHTML = `<button type="button" class="btn-del-row" onclick="hapusBaris(this)">X</button>`;
+            } else if (colType === 'currency') {
+                cell.innerHTML = `<input type="text" class="table-input text-right" placeholder="0" oninput="formatRupiah(this)">`;
+            } else if (colType === 'date') {
+                cell.innerHTML = `<input type="date" class="table-input text-center">`;
+            } else {
+                cell.innerHTML = `<input type="text" class="table-input" placeholder="">`;
+            }
+        }
+        updateNomorDanTotal();
+        sesuaikanUkuranTabel();
+    }
+
+    function hapusBaris(button) {
+        var row = button.parentNode.parentNode;
+        row.parentNode.removeChild(row);
+        updateNomorDanTotal();
+        hitungTotalMataUang();
+    }
+
+    function hitungTotalMataUang() {
+        var headerRow = document.getElementById("headerRow");
+        var tbodyRows = document.getElementById("dynamicTable").getElementsByTagName('tbody')[0].rows;
+        var totalRow = document.getElementById("totalRow");
+        var totalCols = headerRow.cells.length;
+
+        for (var colIndex = 1; colIndex < totalCols - 1; colIndex++) {
+            var colType = headerRow.cells[colIndex].getAttribute('data-type');
+            
+            if (colType === 'currency') {
+                var grandTotalKolom = 0;
+                for (var rowIndex = 0; rowIndex < tbodyRows.length; rowIndex++) {
+                    var inputEl = tbodyRows[rowIndex].cells[colIndex].querySelector('input');
+                    if (inputEl) {
+                        var angkaBersih = parseFloat(inputEl.value.replace(/\./g, "")) || 0;
+                        grandTotalKolom += angkaBersih;
+                    }
+                }
+                totalRow.cells[colIndex].innerText = grandTotalKolom.toLocaleString('id-ID');
+            }
+        }
+    }
+
+    function updateNomorDanTotal() {
+        var rows = document.getElementById("dynamicTable").getElementsByTagName('tbody')[0].rows;
+        for (var i = 0; i < rows.length; i++) {
+            rows[i].querySelector('.row-number').innerText = i + 1;
+        }
+        document.getElementById("totalData").innerText = rows.length;
+    }
+</script>
+
+</body>
+</html>
