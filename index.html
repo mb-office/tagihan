@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rekap Data Super Dinamis (Portrait)</title>
+    <title>Rekap Data Super Dinamis with Firebase</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -74,19 +74,17 @@
         }
         .input-group input { flex-grow: 1; min-width: 200px; }
 
-        /* TABEL DENGAN SISTEM TEMBUS BAWAH (WRAP TEXT) */
         table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 15px;
-            table-layout: auto; /* Biarkan browser mengatur lebar kolom secara fleksibel */
+            table-layout: auto;
         }
         th, td {
             border: 1px solid #000;
             padding: 6px 4px;
             font-size: 11px;
             vertical-align: middle;
-            /* Kunci Utama: Teks wajib patah ke bawah jika kepanjangan */
             word-wrap: break-word; 
             word-break: break-all;
             white-space: normal; 
@@ -98,7 +96,6 @@
             position: relative;
         }
         
-        /* Elemen Input yang Bisa Mengikuti Tinggi Baris */
         .table-input {
             width: 100%;
             box-sizing: border-box;
@@ -109,7 +106,6 @@
             font-family: inherit;
             word-wrap: break-word;
             white-space: normal;
-            resize: none; /* Menghilangkan resize manual */
         }
         .text-center { text-align: center; }
         .text-right { text-align: right; }
@@ -169,59 +165,88 @@
             font-size: 13px;
             font-weight: bold;
             margin-top: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+        #saveStatus {
+            color: #28a745;
+            font-style: italic;
         }
 
-        /* ATURAN KHUSUS CETAK PORTRAIT */
-        @media print {
-            @page {
-                size: portrait; /* Kunci tetap tegak (Portrait) */
-                margin: 10mm 8mm 10mm 8mm; 
-            }
-            body { 
-                padding: 0; 
-                background: none;
-                -webkit-print-color-adjust: exact; 
-                print-color-adjust: exact;
-            }
-            .container { 
-                border: none; 
-                padding: 0; 
-                width: 100% !important; 
-                max-width: 100% !important;
-            }
-            .space-for-kop { display: block !important; }
-            .editable-title { border: none !important; padding: 0; width: 100%; } 
-            .no-print, .control-panel, .btn-del-row, .col-controls, .btn-add-row, .btn-print, .action-col { 
-                display: none !important; 
-            }
-            /* Hilangkan elemen input saat diprint agar teks asli yang patah ke bawah terlihat sempurna */
-            input.table-input {
-                display: none !important;
-            }
-            /* Tampilkan teks bantuan di dalam cell saat print agar pembungkusan tulisan bekerja */
-            .print-text {
-                display: block !important;
-                white-space: normal !important;
-                word-wrap: break-word !important;
-                word-break: break-word !important;
-            }
-            table {
-                width: 100% !important;
-                page-break-inside: auto;
-            }
-            tr {
-                page-break-inside: avoid;
-                page-break-after: auto;
-            }
-            th { background-color: #f2f2f2 !important; }
-            .row-total { background-color: #f9f9f9 !important; }
-        }
-
-        /* Teks bantuan cetak disembunyikan di layar komputer biasa */
         .print-text {
             display: none;
         }
+
+        @media print {
+            @page {
+                size: portrait;
+                margin: 10mm 8mm 10mm 8mm; 
+            }
+            body { padding: 0; background: none; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .container { border: none; padding: 0; width: 100% !important; max-width: 100% !important; }
+            .space-for-kop { display: block !important; }
+            .editable-title { border: none !important; padding: 0; width: 100%; } 
+            .no-print, .control-panel, .btn-del-row, .col-controls, .btn-add-row, .btn-print, .action-col { display: none !important; }
+            input.table-input { display: none !important; }
+            .print-text { display: block !important; white-space: normal !important; word-wrap: break-word !important; }
+            table { width: 100% !important; page-break-inside: auto; }
+            tr { page-break-inside: avoid; page-break-after: auto; }
+            th { background-color: #f2f2f2 !important; }
+            .row-total { background-color: #f9f9f9 !important; }
+        }
     </style>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        // Konfigurasi Firebase milik Anda
+        const firebaseConfig = {
+            apiKey: "AIzaSyAu4Y3nJCqzmGZbU30KqcOxYKESIuI7Ick",
+            authDomain: "tagihan-f4cf7.firebaseapp.com",
+            databaseURL: "https://tagihan-f4cf7-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "tagihan-f4cf7",
+            storageBucket: "tagihan-f4cf7.firebasestorage.app",
+            messagingSenderId: "974025319428",
+            appId: "1:974025319428:web:ad7bd03f9e0b44c0840151"
+        };
+
+        // Inisialisasi Firebase & Realtime Database
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const dbRef = ref(db, 'rekap_tabel_data');
+
+        // FUNGI AUTO SAVE
+        let saveTimeout;
+        window.autoSaveData = function() {
+            document.getElementById("saveStatus").innerText = "Menyimpan perubahan...";
+            clearTimeout(saveTimeout);
+            
+            saveTimeout = setTimeout(() => {
+                const dataSistem = eksporStrukturTabelKeJSON();
+                set(dbRef, dataSistem)
+                .then(() => {
+                    document.getElementById("saveStatus").innerText = "Semua data tersimpan otomatis ke Firebase ✨";
+                })
+                .catch((error) => {
+                    document.getElementById("saveStatus").innerText = "Gagal simpan: " + error.message;
+                });
+            }, 1000);
+        }
+
+        // FUNGSI AUTO LOAD SAAT HALAMAN DIBUKA
+        onValue(dbRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                muatUlangTabelDariJSON(data);
+                document.getElementById("saveStatus").innerText = "Data terakhir berhasil dimuat dari cloud.";
+            } else {
+                rebuildFooter();
+                sesuaikanUkuranTabel();
+                document.getElementById("saveStatus").innerText = "Database kosong. Siap mengisi data baru.";
+            }
+        }, { onlyOnce: true });
+    </script>
 </head>
 <body>
 
@@ -229,7 +254,7 @@
     <div class="space-for-kop"></div>
 
     <div class="doc-title-container">
-        <input type="text" class="editable-title" value="LAPORAN REKAPITULASI DATA" title="Klik untuk mengubah judul">
+        <input type="text" id="docTitle" class="editable-title" value="LAPORAN REKAPITULASI DATA" oninput="autoSaveData()">
     </div>
 
     <div class="control-panel no-print">
@@ -296,7 +321,7 @@
                 <th class="action-col" style="width: 40px;" data-type="system">AKSI</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="tableBody">
             <tr>
                 <td class="text-center row-number">1</td>
                 <td>
@@ -329,15 +354,15 @@
             </tr>
         </tbody>
         <tfoot>
-            <tr id="totalRow" class="row-total">
-                </tr>
+            <tr id="totalRow" class="row-total"></tr>
         </tfoot>
     </table>
 
     <button type="button" class="btn btn-add-row no-print" onclick="tambahBaris()">+ Tambah Baris Kotak</button>
 
     <div class="footer-status">
-        Total Data: <span id="totalData">1</span> Baris
+        <div>Total Data: <span id="totalData">1</span> Baris</div>
+        <div id="saveStatus">Menghubungkan ke Firebase...</div>
     </div>
 
     <div style="text-align: right; margin-top: 20px;">
@@ -346,18 +371,13 @@
 </div>
 
 <script>
-    window.onload = function() {
-        rebuildFooter();
-        sesuaikanUkuranTabel();
-    };
-
-    // Sinkronisasi teks input ke elemen teks biasa khusus untuk sistem print browser
     function updatePrintText(input) {
         var parentCell = input.parentElement;
         var printTextDiv = parentCell.querySelector('.print-text');
         if (printTextDiv) {
             printTextDiv.innerText = input.value;
         }
+        if(typeof autoSaveData === 'function') autoSaveData(); 
     }
 
     function formatRupiah(input) {
@@ -377,20 +397,10 @@
         var headerRow = document.getElementById("headerRow");
         var totalKolom = headerRow.cells.length - 2; 
         var tabel = document.getElementById("dynamicTable");
-        
-        var fontSize = 11; 
-        var padding = 6;
-        
-        if (totalKolom > 10) {
-            fontSize = 8;
-            padding = 3;
-        } else if (totalKolom > 8) {
-            fontSize = 9;
-            padding = 4;
-        } else if (totalKolom > 6) {
-            fontSize = 10;
-            padding = 5;
-        }
+        var fontSize = 11; var padding = 6;
+        if (totalKolom > 10) { fontSize = 8; padding = 3; } 
+        else if (totalKolom > 8) { fontSize = 9; padding = 4; } 
+        else if (totalKolom > 6) { fontSize = 10; padding = 5; }
         
         var allCells = tabel.querySelectorAll("th, td");
         allCells.forEach(function(cell) {
@@ -403,10 +413,9 @@
     function rebuildFooter() {
         var headerRow = document.getElementById("headerRow");
         var totalRow = document.getElementById("totalRow");
+        if (!totalRow) return;
         totalRow.innerHTML = ""; 
-
         var totalCols = headerRow.cells.length;
-        
         var firstCell = totalRow.insertCell(0);
         firstCell.className = "text-right";
         firstCell.innerText = "TOTAL :";
@@ -414,15 +423,9 @@
         for (var i = 1; i < totalCols; i++) {
             var cell = totalRow.insertCell(i);
             var colType = headerRow.cells[i].getAttribute('data-type');
-            
-            if (i === totalCols - 1) {
-                cell.className = "action-col";
-            } else if (colType === 'currency') {
-                cell.className = "text-right";
-                cell.innerText = "0";
-            } else {
-                cell.innerText = "";
-            }
+            if (i === totalCols - 1) { cell.className = "action-col"; } 
+            else if (colType === 'currency') { cell.className = "text-right"; cell.innerText = "0"; } 
+            else { cell.innerText = ""; }
         }
         hitungTotalMataUang();
     }
@@ -430,11 +433,7 @@
     function tambahKolomAwal() {
         var columnName = document.getElementById("newColumnName").value.trim();
         var columnType = document.getElementById("newColumnType").value;
-        
-        if (columnName === "") {
-            alert("Silakan isi nama judul kolom terlebih dahulu!");
-            return;
-        }
+        if (columnName === "") { alert("Silakan isi nama judul kolom!"); return; }
 
         var table = document.getElementById("dynamicTable");
         var headerRow = document.getElementById("headerRow");
@@ -466,6 +465,7 @@
         document.getElementById("newColumnName").value = "";
         rebuildFooter();
         sesuaikanUkuranTabel();
+        if(typeof autoSaveData === 'function') autoSaveData();
     }
 
     function hapusKolomSpesifik(button) {
@@ -473,53 +473,37 @@
             var th = button.closest('th');
             var index = th.cellIndex;
             var table = document.getElementById("dynamicTable");
-
             document.getElementById("headerRow").deleteCell(index);
-
             var tbodyRows = table.getElementsByTagName('tbody')[0].rows;
-            for (var i = 0; i < tbodyRows.length; i++) {
-                tbodyRows[i].deleteCell(index);
-            }
-
+            for (var i = 0; i < tbodyRows.length; i++) { tbodyRows[i].deleteCell(index); }
             rebuildFooter();
             sesuaikanUkuranTabel();
+            if(typeof autoSaveData === 'function') autoSaveData();
         }
     }
 
     function geserKolom(button, direction) {
-        var th = button.closest('th');
-        var index = th.cellIndex;
-        var headerRow = document.getElementById("headerRow");
-        var targetIndex = index + direction;
+        var th = button.closest('th'); var index = th.cellIndex;
+        var headerRow = document.getElementById("headerRow"); var targetIndex = index + direction;
+        if (targetIndex <= 0 || targetIndex >= headerRow.cells.length - 1) return; 
 
-        if (targetIndex <= 0 || targetIndex >= headerRow.cells.length - 1) {
-            return; 
-        }
-
-        if (direction === 1) {
-            headerRow.insertBefore(headerRow.cells[targetIndex], th);
-        } else {
-            headerRow.insertBefore(th, headerRow.cells[targetIndex]);
-        }
+        if (direction === 1) { headerRow.insertBefore(headerRow.cells[targetIndex], th); } 
+        else { headerRow.insertBefore(th, headerRow.cells[targetIndex]); }
 
         var table = document.getElementById("dynamicTable");
         var tbodyRows = table.getElementsByTagName('tbody')[0].rows;
         for (var i = 0; i < tbodyRows.length; i++) {
             var row = tbodyRows[i];
-            if (direction === 1) {
-                row.insertBefore(row.cells[targetIndex], row.cells[index]);
-            } else {
-                row.insertBefore(row.cells[index], row.cells[targetIndex]);
-            }
+            if (direction === 1) { row.insertBefore(row.cells[targetIndex], row.cells[index]); } 
+            else { row.insertBefore(row.cells[index], row.cells[targetIndex]); }
         }
-
         rebuildFooter();
-        sesuaikanUkuranTabel();
+        if(typeof autoSaveData === 'function') autoSaveData();
     }
 
     function tambahBaris() {
         var headerRow = document.getElementById("headerRow");
-        var tbody = document.getElementById("dynamicTable").getElementsByTagName('tbody')[0];
+        var tbody = document.getElementById("tableBody");
         var newRow = tbody.insertRow(-1);
         var totalCols = headerRow.cells.length;
 
@@ -542,6 +526,7 @@
         }
         updateNomorDanTotal();
         sesuaikanUkuranTabel();
+        if(typeof autoSaveData === 'function') autoSaveData();
     }
 
     function hapusBaris(button) {
@@ -549,17 +534,18 @@
         row.parentNode.removeChild(row);
         updateNomorDanTotal();
         hitungTotalMataUang();
+        if(typeof autoSaveData === 'function') autoSaveData();
     }
 
     function hitungTotalMataUang() {
         var headerRow = document.getElementById("headerRow");
-        var tbodyRows = document.getElementById("dynamicTable").getElementsByTagName('tbody')[0].rows;
+        var tbodyRows = document.getElementById("tableBody").rows;
         var totalRow = document.getElementById("totalRow");
+        if(!totalRow || totalRow.cells.length === 0) return;
         var totalCols = headerRow.cells.length;
 
         for (var colIndex = 1; colIndex < totalCols - 1; colIndex++) {
             var colType = headerRow.cells[colIndex].getAttribute('data-type');
-            
             if (colType === 'currency') {
                 var grandTotalKolom = 0;
                 for (var rowIndex = 0; rowIndex < tbodyRows.length; rowIndex++) {
@@ -575,11 +561,90 @@
     }
 
     function updateNomorDanTotal() {
-        var rows = document.getElementById("dynamicTable").getElementsByTagName('tbody')[0].rows;
-        for (var i = 0; i < rows.length; i++) {
-            rows[i].querySelector('.row-number').innerText = i + 1;
-        }
+        var rows = document.getElementById("tableBody").rows;
+        for (var i = 0; i < rows.length; i++) { rows[i].querySelector('.row-number').innerText = i + 1; }
         document.getElementById("totalData").innerText = rows.length;
+    }
+
+    function eksporStrukturTabelKeJSON() {
+        const title = document.getElementById("docTitle").value;
+        const headerRow = document.getElementById("headerRow");
+        const tbodyRows = document.getElementById("tableBody").rows;
+        
+        const columns = [];
+        for (let i = 1; i < headerRow.cells.length - 1; i++) {
+            columns.push({
+                name: headerRow.cells[i].firstChild.textContent.trim(),
+                type: headerRow.cells[i].getAttribute('data-type'),
+                width: headerRow.cells[i].style.width || ""
+            });
+        }
+
+        const rows = [];
+        for (let i = 0; i < tbodyRows.length; i++) {
+            const rowData = [];
+            for (let j = 1; j < tbodyRows[i].cells.length - 1; j++) {
+                const input = tbodyRows[i].cells[j].querySelector('input');
+                rowData.push(input ? input.value : "");
+            }
+            rows.push(rowData);
+        }
+
+        return { title, columns, rows };
+    }
+
+    function muatUlangTabelDariJSON(data) {
+        document.getElementById("docTitle").value = data.title || "LAPORAN REKAPITULASI DATA";
+        const headerRow = document.getElementById("headerRow");
+        headerRow.innerHTML = `<th style="width: 30px;" data-type="system">NO</th><th class="action-col" style="width: 40px;" data-type="system">AKSI</th>`;
+        
+        if (data.columns) {
+            data.columns.forEach(col => {
+                const th = document.createElement('th');
+                th.setAttribute('data-type', col.type);
+                if(col.width) th.style.width = col.width;
+                th.innerHTML = col.name + `
+                    <div class="col-controls no-print">
+                        <button class="btn-nav" onclick="geserKolom(this, -1)">◀</button>
+                        <button class="btn-nav" onclick="geserKolom(this, 1)">▶</button>
+                        <button class="btn-del-col" onclick="hapusKolomSpesifik(this)">X</button>
+                    </div>`;
+                headerRow.insertBefore(th, headerRow.cells[headerRow.cells.length - 1]);
+            });
+        }
+
+        const tbody = document.getElementById("tableBody");
+        tbody.innerHTML = "";
+        
+        if (data.rows) {
+            data.rows.forEach((row, rIndex) => {
+                const newRow = tbody.insertRow(-1);
+                const cellNo = newRow.insertCell(0);
+                cellNo.className = "text-center row-number";
+                cellNo.innerText = rIndex + 1;
+
+                row.forEach((val, cIndex) => {
+                    const cell = newRow.insertCell(cIndex + 1);
+                    const colType = data.columns[cIndex].type;
+                    
+                    if (colType === 'currency') {
+                        cell.innerHTML = `<input type="text" class="table-input text-right" value="${val}" placeholder="0" oninput="formatRupiah(this)"><div class="print-text text-right">${val}</div>`;
+                    } else if (colType === 'date') {
+                        cell.innerHTML = `<input type="date" class="table-input text-center" value="${val}" oninput="updatePrintText(this)"><div class="print-text text-center">${val}</div>`;
+                    } else {
+                        cell.innerHTML = `<input type="text" class="table-input" value="${val}" placeholder="" oninput="updatePrintText(this)"><div class="print-text">${val}</div>`;
+                    }
+                });
+
+                const cellAksi = newRow.insertCell(newRow.cells.length);
+                cellAksi.className = "action-col text-center";
+                cellAksi.innerHTML = `<button type="button" class="btn-del-row" onclick="hapusBaris(this)">X</button>`;
+            });
+        }
+        
+        updateNomorDanTotal();
+        rebuildFooter();
+        sesuaikanUkuranTabel();
     }
 </script>
 
