@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rekap Data Super Dinamis</title>
+    <title>Rekap Data Super Dinamis (Portrait)</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -14,9 +14,9 @@
         }
         .container {
             width: 100%;
-            max-width: 1200px;
+            max-width: 1000px;
             margin: 0 auto;
-            padding: 30px;
+            padding: 20px;
             background: #fff;
             border: 1px dashed #ccc;
             box-sizing: border-box;
@@ -27,7 +27,6 @@
             display: none;
         }
 
-        /* Desain Judul yang Bisa Diedit Langsung */
         .doc-title-container {
             text-align: center;
             margin-bottom: 25px;
@@ -65,6 +64,7 @@
             display: flex;
             gap: 10px;
             align-items: center;
+            flex-wrap: wrap;
         }
         .input-group input, .input-group select {
             padding: 8px;
@@ -72,22 +72,24 @@
             border-radius: 4px;
             font-size: 13px;
         }
-        .input-group input { flex-grow: 1; }
+        .input-group input { flex-grow: 1; min-width: 200px; }
 
-        /* Tabel Utama yang Ukurannya Fleksibel */
+        /* TABEL DENGAN SISTEM TEMBUS BAWAH (WRAP TEXT) */
         table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 15px;
-            table-layout: fixed; /* Memaksa kolom berbagi ruang secara adil */
+            table-layout: auto; /* Biarkan browser mengatur lebar kolom secara fleksibel */
         }
         th, td {
             border: 1px solid #000;
-            padding: 8px 4px;
-            font-size: 12px; /* Nilai bawaan, akan mengecil otomatis via JS */
+            padding: 6px 4px;
+            font-size: 11px;
             vertical-align: middle;
-            word-wrap: break-word;
-            overflow: hidden;
+            /* Kunci Utama: Teks wajib patah ke bawah jika kepanjangan */
+            word-wrap: break-word; 
+            word-break: break-all;
+            white-space: normal; 
         }
         th {
             background-color: #f2f2f2;
@@ -96,14 +98,18 @@
             position: relative;
         }
         
+        /* Elemen Input yang Bisa Mengikuti Tinggi Baris */
         .table-input {
             width: 100%;
             box-sizing: border-box;
             border: none;
             outline: none;
             background: transparent;
-            font-size: inherit; /* Ikut mengecil sesuai ukuran kolom */
+            font-size: inherit;
             font-family: inherit;
+            word-wrap: break-word;
+            white-space: normal;
+            resize: none; /* Menghilangkan resize manual */
         }
         .text-center { text-align: center; }
         .text-right { text-align: right; }
@@ -113,7 +119,6 @@
             font-weight: bold;
         }
 
-        /* Navigasi Tombol Kolom */
         .col-controls {
             margin-top: 5px;
             display: flex;
@@ -166,18 +171,55 @@
             margin-top: 10px;
         }
 
-        /* Aturan Cetak PDF Kertas */
+        /* ATURAN KHUSUS CETAK PORTRAIT */
         @media print {
-            body { padding: 0; background: none; }
-            .container { border: none; padding: 0; width: 100%; max-width: 100%; }
+            @page {
+                size: portrait; /* Kunci tetap tegak (Portrait) */
+                margin: 10mm 8mm 10mm 8mm; 
+            }
+            body { 
+                padding: 0; 
+                background: none;
+                -webkit-print-color-adjust: exact; 
+                print-color-adjust: exact;
+            }
+            .container { 
+                border: none; 
+                padding: 0; 
+                width: 100% !important; 
+                max-width: 100% !important;
+            }
             .space-for-kop { display: block !important; }
-            .editable-title { border: none !important; padding: 0; width: 100%; } /* Hilangkan garis kotak judul saat di-print */
+            .editable-title { border: none !important; padding: 0; width: 100%; } 
             .no-print, .control-panel, .btn-del-row, .col-controls, .btn-add-row, .btn-print, .action-col { 
                 display: none !important; 
             }
-            input { border: none !important; background: transparent !important; }
-            th { background-color: #f2f2f2 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            .row-total { background-color: #f9f9f9 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            /* Hilangkan elemen input saat diprint agar teks asli yang patah ke bawah terlihat sempurna */
+            input.table-input {
+                display: none !important;
+            }
+            /* Tampilkan teks bantuan di dalam cell saat print agar pembungkusan tulisan bekerja */
+            .print-text {
+                display: block !important;
+                white-space: normal !important;
+                word-wrap: break-word !important;
+                word-break: break-word !important;
+            }
+            table {
+                width: 100% !important;
+                page-break-inside: auto;
+            }
+            tr {
+                page-break-inside: avoid;
+                page-break-after: auto;
+            }
+            th { background-color: #f2f2f2 !important; }
+            .row-total { background-color: #f9f9f9 !important; }
+        }
+
+        /* Teks bantuan cetak disembunyikan di layar komputer biasa */
+        .print-text {
+            display: none;
         }
     </style>
 </head>
@@ -208,15 +250,15 @@
     <table id="dynamicTable">
         <thead>
             <tr id="headerRow">
-                <th style="width: 40px;" data-type="system">NO</th>
-                <th data-type="text">TANGGAL
+                <th style="width: 30px;" data-type="system">NO</th>
+                <th data-type="text" style="width: 80px;">TANGGAL
                     <div class="col-controls no-print">
                         <button class="btn-nav" onclick="geserKolom(this, -1)">◀</button>
                         <button class="btn-nav" onclick="geserKolom(this, 1)">▶</button>
                         <button class="btn-del-col" onclick="hapusKolomSpesifik(this)">X</button>
                     </div>
                 </th>
-                <th data-type="text">TANGGAL KELUAR ABSAH
+                <th data-type="text" style="width: 90px;">TANGGAL KELUAR ABSAH
                     <div class="col-controls no-print">
                         <button class="btn-nav" onclick="geserKolom(this, -1)">◀</button>
                         <button class="btn-nav" onclick="geserKolom(this, 1)">▶</button>
@@ -230,7 +272,7 @@
                         <button class="btn-del-col" onclick="hapusKolomSpesifik(this)">X</button>
                     </div>
                 </th>
-                <th data-type="text">NO POLISI
+                <th data-type="text" style="width: 80px;">NO POLISI
                     <div class="col-controls no-print">
                         <button class="btn-nav" onclick="geserKolom(this, -1)">◀</button>
                         <button class="btn-nav" onclick="geserKolom(this, 1)">▶</button>
@@ -251,18 +293,36 @@
                         <button class="btn-del-col" onclick="hapusKolomSpesifik(this)">X</button>
                     </div>
                 </th>
-                <th class="action-col" style="width: 50px;" data-type="system">AKSI</th>
+                <th class="action-col" style="width: 40px;" data-type="system">AKSI</th>
             </tr>
         </thead>
         <tbody>
             <tr>
                 <td class="text-center row-number">1</td>
-                <td><input type="text" class="table-input text-center" placeholder="26-May-26"></td>
-                <td><input type="text" class="table-input text-center" placeholder="03-Jun-26"></td>
-                <td><input type="text" class="table-input" placeholder="061826000379"></td>
-                <td><input type="text" class="table-input" placeholder="BK1701LAJ"></td>
-                <td><input type="text" class="table-input" placeholder="S-06712388"></td>
-                <td><input type="text" class="table-input" placeholder="MARISCA ROSElina..."></td>
+                <td>
+                    <input type="text" class="table-input text-center" placeholder="26-May-26" oninput="updatePrintText(this)">
+                    <div class="print-text text-center">26-May-26</div>
+                </td>
+                <td>
+                    <input type="text" class="table-input text-center" placeholder="03-Jun-26" oninput="updatePrintText(this)">
+                    <div class="print-text text-center">03-Jun-26</div>
+                </td>
+                <td>
+                    <input type="text" class="table-input" placeholder="061826000379" oninput="updatePrintText(this)">
+                    <div class="print-text">061826000379</div>
+                </td>
+                <td>
+                    <input type="text" class="table-input" placeholder="BK1701LAJ" oninput="updatePrintText(this)">
+                    <div class="print-text">BK1701LAJ</div>
+                </td>
+                <td>
+                    <input type="text" class="table-input" placeholder="S-06712388" oninput="updatePrintText(this)">
+                    <div class="print-text">S-06712388</div>
+                </td>
+                <td>
+                    <input type="text" class="table-input" placeholder="MARISCA ROSElina..." oninput="updatePrintText(this)">
+                    <div class="print-text">MARISCA ROSElina...</div>
+                </td>
                 <td class="action-col text-center">
                     <button type="button" class="btn-del-row" onclick="hapusBaris(this)">X</button>
                 </td>
@@ -291,39 +351,47 @@
         sesuaikanUkuranTabel();
     };
 
+    // Sinkronisasi teks input ke elemen teks biasa khusus untuk sistem print browser
+    function updatePrintText(input) {
+        var parentCell = input.parentElement;
+        var printTextDiv = parentCell.querySelector('.print-text');
+        if (printTextDiv) {
+            printTextDiv.innerText = input.value;
+        }
+    }
+
     function formatRupiah(input) {
         var value = input.value.replace(/\D/g, ""); 
         if (value === "") {
             input.value = "";
+            updatePrintText(input);
             hitungTotalMataUang();
             return;
         }
         input.value = parseInt(value, 10).toLocaleString('id-ID');
+        updatePrintText(input);
         hitungTotalMataUang(); 
     }
 
-    // OTOMATISASI UKURAN HURUF AGAR TIDAK TERPOTONG SAAT PRINT
     function sesuaikanUkuranTabel() {
         var headerRow = document.getElementById("headerRow");
-        var totalKolom = headerRow.cells.length - 2; // Abaikan NO dan AKSI
+        var totalKolom = headerRow.cells.length - 2; 
         var tabel = document.getElementById("dynamicTable");
         
-        var fontSize = 12; // Ukuran standar bawaan
-        var padding = 8;
+        var fontSize = 11; 
+        var padding = 6;
         
-        // Aturan penurunan ukuran otomatis berdasarkan jumlah kolom aktif
         if (totalKolom > 10) {
+            fontSize = 8;
+            padding = 3;
+        } else if (totalKolom > 8) {
             fontSize = 9;
             padding = 4;
-        } else if (totalKolom > 8) {
+        } else if (totalKolom > 6) {
             fontSize = 10;
             padding = 5;
-        } else if (totalKolom > 6) {
-            fontSize = 11;
-            padding = 6;
         }
         
-        // Terapkan ukuran baru ke semua kotak isi tabel
         var allCells = tabel.querySelectorAll("th, td");
         allCells.forEach(function(cell) {
             cell.style.fontSize = fontSize + "px";
@@ -387,11 +455,11 @@
         for (var i = 0; i < tbodyRows.length; i++) {
             var cell = tbodyRows[i].insertCell(tbodyRows[i].cells.length - 1);
             if (columnType === 'currency') {
-                cell.innerHTML = `<input type="text" class="table-input text-right" placeholder="0" oninput="formatRupiah(this)">`;
+                cell.innerHTML = `<input type="text" class="table-input text-right" placeholder="0" oninput="formatRupiah(this)"><div class="print-text text-right">0</div>`;
             } else if (columnType === 'date') {
-                cell.innerHTML = `<input type="date" class="table-input text-center">`;
+                cell.innerHTML = `<input type="date" class="table-input text-center" oninput="updatePrintText(this)"><div class="print-text text-center"></div>`;
             } else {
-                cell.innerHTML = `<input type="text" class="table-input" placeholder="-">`;
+                cell.innerHTML = `<input type="text" class="table-input" placeholder="-" oninput="updatePrintText(this)"><div class="print-text">-</div>`;
             }
         }
 
@@ -446,6 +514,7 @@
         }
 
         rebuildFooter();
+        sesuaikanUkuranTabel();
     }
 
     function tambahBaris() {
@@ -464,11 +533,11 @@
                 cell.className = "action-col text-center";
                 cell.innerHTML = `<button type="button" class="btn-del-row" onclick="hapusBaris(this)">X</button>`;
             } else if (colType === 'currency') {
-                cell.innerHTML = `<input type="text" class="table-input text-right" placeholder="0" oninput="formatRupiah(this)">`;
+                cell.innerHTML = `<input type="text" class="table-input text-right" placeholder="0" oninput="formatRupiah(this)"><div class="print-text text-right">0</div>`;
             } else if (colType === 'date') {
-                cell.innerHTML = `<input type="date" class="table-input text-center">`;
+                cell.innerHTML = `<input type="date" class="table-input text-center" oninput="updatePrintText(this)"><div class="print-text text-center"></div>`;
             } else {
-                cell.innerHTML = `<input type="text" class="table-input" placeholder="">`;
+                cell.innerHTML = `<input type="text" class="table-input" placeholder="" oninput="updatePrintText(this)"><div class="print-text"></div>`;
             }
         }
         updateNomorDanTotal();
