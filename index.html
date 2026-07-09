@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Windows 95 Desktop & Cloud Explorer + Buku Besar</title>
+    <title>Windows 95 Desktop & Cloud Explorer</title>
     <style>
         /* BASE & DESKTOP WALLPAPER CLASSIC WINDOWS 95 */
         body {
@@ -111,27 +111,9 @@
             display: none;
         }
 
-        #bukuBesarWindow {
-            width: 95%;
-            height: 85%;
-            top: 5%;
-            left: 2.5%;
-            display: none;
-            z-index: 15;
-        }
-
-        #ocrWindow {
-            width: 80%;
-            height: 85%;
-            top: 7.5%;
-            left: 10%;
-            display: none;
-            z-index: 16;
-        }
-
         /* OTOMATIS JADI FULLSCREEN JIKA DIBUKA DI HP */
         @media (max-width: 768px) {
-            #mainExplorerWindow, #tableEditorWindow, #bukuBesarWindow, #ocrWindow {
+            #mainExplorerWindow, #tableEditorWindow {
                 width: 100% !important;
                 height: calc(100% - 38px) !important;
                 top: 0 !important;
@@ -188,497 +170,158 @@
         }
 
         /* MENU, TOOLBAR, & ADDRESS */
-        .menu-bar { background-color: #d4d0c8; padding: 2px 4px; border-bottom: 2px solid #dfdfdf; display: flex; gap: 10px; }
-        .menu-item { padding: 4px 8px; cursor: pointer; font-size: 11px; }
-        .menu-item:hover { background-color: #000080; color: white; }
-
-        .toolbar { background-color: #d4d0c8; padding: 6px 4px; display: flex; gap: 4px; border-bottom: 2px solid #dfdfdf; flex-wrap: wrap; }
-        .btn-win95 { background-color: #d4d0c8; border-top: 1px solid #fff; border-left: 1px solid #fff; border-right: 1px solid #404040; border-bottom: 1px solid #404040; box-shadow: 0.5px 0.5px 0 #000; padding: 4px 12px; cursor: pointer; font-size: 11px; font-weight: bold; color: black; }
-        .btn-win95:active { border-top: 1px solid #404040; border-left: 1px solid #404040; border-right: 1px solid #fff; border-bottom: 1px solid #fff; box-shadow: none; }
-        .btn-win95:disabled { color: #808080; cursor: not-allowed; }
-
-        .address-bar { background-color: white; padding: 4px; border: 2px solid #d4d0c8; margin: 4px; font-size: 11px; flex: 1; }
-
-        /* LEFT PANEL / FOLDER TREE */
-        .left-panel { width: 150px; background-color: white; border-right: 2px solid #dfdfdf; padding: 4px; overflow-y: auto; max-height: 100%; }
-        .tree-item { padding: 2px 4px; cursor: pointer; font-size: 11px; margin: 2px 0; }
-        .tree-item:hover { background-color: #e6f0ff; }
-        .tree-item.active { background-color: #000080; color: white; }
-        .tree-children { margin-left: 16px; }
-
-        /* MAIN CONTENT AREA */
-        .main-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        .explorer-items {
-            flex: 1;
-            overflow-y: auto;
-            padding: 8px;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-            gap: 10px;
-            align-content: flex-start;
-        }
-
-        .explorer-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            padding: 8px;
+        .menu-bar { display: flex; gap: 12px; padding: 4px 6px; border-bottom: 1px solid #808080; }
+        .menu-item { cursor: pointer; }
+        .toolbar { display: flex; gap: 4px; padding: 4px; border-bottom: 2px solid #808080; flex-wrap: wrap; }
+        
+        .btn-win95 {
+            background-color: #d4d0c8;
+            border-top: 1px solid #fff;
+            border-left: 1px solid #fff;
+            border-right: 1px solid #808080;
+            border-bottom: 1px solid #808080;
+            padding: 4px 8px;
             cursor: pointer;
-            border: 2px solid transparent;
-            background-color: white;
+            font-family: inherit;
+            font-size: 11px;
+        }
+        .btn-win95:active { border-top:1px solid #808080; border-left:1px solid #808080; border-right:1px solid #fff; border-bottom:1px solid #fff; }
+        .btn-win95:disabled { color: #808080; opacity: 0.6; cursor: not-allowed; }
+
+        .address-bar-container { display: flex; align-items: center; gap: 5px; padding: 4px; border-bottom: 2px solid #fff; }
+        .address-input { flex-grow: 1; background-color: #fff; border-top: 2px solid #808080; border-left: 2px solid #808080; border-right: 2px solid #fff; border-bottom: 2px solid #fff; padding: 3px; font-size: 11px; outline: none; }
+
+        /* BODY CONTAINER INTERIOR WORKSPACE */
+        .window-body {
+            display: flex;
+            flex-grow: 1;
+            background-color: #fff;
+            border-top: 2px solid #808080;
+            border-left: 2px solid #808080;
+            border-right: 2px solid #fff;
+            border-bottom: 2px solid #fff;
+            margin: 4px;
+            overflow: hidden;
+            position: relative;
         }
 
-        .explorer-item:hover { background-color: #e6f0ff; border-color: #000080; }
-        .explorer-item.selected { background-color: #000080; color: white; border-color: #000080; }
+        .left-panel { width: 160px; border-right: 2px solid #d4d0c8; overflow-y: auto; padding: 5px; background: #fff; }
+        @media (max-width: 600px) { .left-panel { display: none; } } /* Sembunyikan sidebar folder di HP agar lega */
+        
+        .right-panel { 
+            flex-grow: 1; 
+            overflow-y: auto; 
+            padding: 10px; 
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 15px; 
+            align-content: flex-start; 
+            background: #fff; 
+            -webkit-overflow-scrolling: touch;
+        }
 
+        /* ITEMS GRID STYLING - LEBIH MUDAH DIKLIK DI HP */
+        .explorer-item { 
+            width: 75px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            text-align: center; 
+            cursor: pointer; 
+            padding: 6px; 
+            border: 1px solid transparent;
+        }
+        .explorer-item.selected { background-color: #000080 !important; color: white !important; }
         .item-icon { font-size: 32px; margin-bottom: 4px; }
-        .item-name { font-size: 10px; word-wrap: break-word; }
+        .item-name { font-size: 11px; word-wrap: break-word; max-width: 100%; }
 
-        /* STATUS BAR */
-        .status-bar { background-color: #d4d0c8; padding: 2px 4px; border-top: 2px solid #fff; font-size: 10px; display: flex; gap: 10px; }
-        .status-item { flex: 1; }
+        /* WINDOW SCROLLABLE AREA EDITOR TABEL */
+        .scrollable-editor-content {
+            flex-grow: 1;
+            overflow: auto;
+            padding: 10px;
+            box-sizing: border-box;
+            -webkit-overflow-scrolling: touch;
+        }
 
-        /* ============ TABLE EDITOR CSS ============ */
-        .table-section { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-        .doc-title-input { width: 100%; padding: 8px; border: 1px solid #c0c0c0; font-size: 12px; margin: 4px 0; }
-        .add-column-section { padding: 8px; background-color: #f0f0f0; display: flex; gap: 6px; align-items: center; }
-        .add-column-section input, .add-column-section select { font-size: 11px; padding: 4px; border: 1px solid #c0c0c0; }
-        .table-wrapper { flex: 1; overflow: auto; padding: 8px; background-color: white; }
-        .table-wrapper table { width: 100%; border-collapse: collapse; font-size: 11px; }
-        .table-wrapper table th { background-color: #000080; color: white; padding: 4px 6px; border: 1px solid #c0c0c0; text-align: left; position: sticky; top: 0; z-index: 100; }
-        .table-wrapper table td { padding: 4px 6px; border: 1px solid #c0c0c0; }
-        .table-wrapper table tbody tr:nth-child(odd) { background-color: #f5f5f5; }
-        .table-wrapper table tbody tr:hover { background-color: #e6f0ff; }
-        .table-input { width: 100%; border: 1px solid #c0c0c0; padding: 2px 4px; font-size: 11px; box-sizing: border-box; }
-        .table-select { width: 100%; border: 1px solid #c0c0c0; padding: 2px 4px; font-size: 11px; box-sizing: border-box; }
+        /* REKAP TABEL STYLE */
+        .doc-title-container { margin-bottom: 10px; }
+        .editable-title { font-size: 16px; font-weight: bold; border: none; border-bottom: 1px dashed #808080; width: 100%; outline: none; padding: 2px 0; }
+        .control-panel { background-color: #f0f0f0; padding: 8px; border: 1px solid #808080; margin-bottom: 12px; }
+        .input-group { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+        .input-group input, .input-group select { padding: 4px; font-size: 12px; }
+
+        /* Pembungkus Tabel Agar Bisa Digeser Kanan-Kiri di Layar Kecil HP */
+        .table-responsive-container {
+            width: 100%;
+            overflow-x: auto;
+            margin-bottom: 10px;
+            border: 1px solid #808080;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        table { width: 100%; border-collapse: collapse; background-color: #fff; min-width: 450px; }
+        th, td { border: 1px solid #000; padding: 6px; font-size: 12px; vertical-align: middle; }
+        th { background-color: #d4d0c8; font-weight: bold; text-align: center; }
+
+        .table-input, .table-select {
+            width: 100%; box-sizing: border-box; border: 1px solid #ccc; padding: 4px; font-size: 12px; background-color: #fff;
+        }
+
         .text-center { text-align: center; }
         .text-right { text-align: right; }
-        .row-number { width: 30px; text-align: center; color: #666; }
-        .action-col { width: 40px; text-align: center; }
-        .btn-del-row { background-color: #ff6b6b; color: white; border: none; padding: 2px 6px; cursor: pointer; font-size: 10px; }
-        .btn-del-row:hover { background-color: #ff4444; }
-        .btn-del-col { background-color: #ff6b6b; color: white; border: none; padding: 1px 4px; cursor: pointer; font-size: 9px; }
-        .btn-nav { background-color: #d4d0c8; border: 1px solid #808080; padding: 2px 4px; cursor: pointer; font-size: 9px; }
-        .col-controls { display: flex; gap: 2px; position: absolute; top: 0; right: 0; opacity: 0; }
-        .col-controls.no-print { display: none; }
-        .print-text { display: none; }
         .row-total { background-color: #e6e6e6; font-weight: bold; }
+        .col-controls { margin-top: 4px; display: flex; justify-content: center; gap: 2px; }
+        .btn-nav { background: #d4d0c8; border: 1px solid #808080; font-size: 9px; cursor: pointer; padding: 1px 3px; }
+        .btn-del-col { background-color: #ffc107; font-size: 9px; border: 1px solid #808080; cursor: pointer; padding: 1px 3px; }
+        .btn-del-row { background-color: #dc3545; color: white; border: 1px solid #000; padding: 2px 6px; cursor: pointer; font-weight: bold; }
 
+        /* STATUS BAR WINDOW BOX */
+        .status-bar { background-color: #d4d0c8; border-top: 2px solid #808080; padding: 3px; display: flex; font-size: 11px; gap: 4px; }
+        .status-field { background-color: #d4d0c8; border-top: 1px solid #808080; border-left: 1px solid #808080; border-right: 1px solid #fff; border-bottom: 1px solid #fff; padding: 2px 6px; }
+
+        .print-text { display: none; }
         @media print {
-            .no-print { display: none !important; }
-            .print-text { display: inline !important; }
-            .table-input, .table-select { display: none !important; }
+            body { background: none; overflow: visible; }
+            .win95-window, .no-print, .control-panel, .col-controls, .btn-del-row, .toolbar, .title-bar, .status-bar, .taskbar, .desktop-area { display: none !important; }
+            #tableEditorWindow { display: flex !important; position: static; padding: 0; width: 100%; height: auto; border: none; box-shadow: none; }
+            .window-body, .scrollable-editor-content, .table-responsive-container { border: none; padding: 0; overflow: visible; }
+            input.table-input, select.table-select { display: none !important; }
+            .print-text { display: block !important; white-space: normal !important; word-wrap: break-word !important; }
+            table { width: 100% !important; min-width: 100% !important; }
         }
 
-        @media (max-width: 600px) { .left-panel { display: none; } }
+        /* ===== BUKU BESAR CSS ===== */
+        #bukuBesarWindow { width: 95%; height: 85%; top: 5%; left: 2.5%; display: none; }
+        .buku-besar-filter { padding: 8px; background-color: #d4d0c8; border-bottom: 1px solid #808080; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+        .buku-besar-filter select, .buku-besar-filter input { font-size: 11px; padding: 2px 4px; border: 1px solid #808080; background-color: white; }
+        .buku-besar-container { flex: 1; overflow: auto; padding: 8px; background-color: #fff; }
+        .buku-besar-table { width: 100%; border-collapse: collapse; font-size: 10px; background-color: white; }
+        .buku-besar-table thead { background-color: #004080; color: white; position: sticky; top: 0; }
+        .buku-besar-table th { padding: 4px; text-align: left; border: 1px solid #c0c0c0; font-weight: bold; white-space: nowrap; }
+        .buku-besar-table td { padding: 4px; border: 1px solid #e0e0e0; }
+        .buku-besar-table tbody tr:nth-child(odd) { background-color: #f5f5f5; }
+        .buku-besar-table td.col-mitra { background-color: #ffffcc; font-weight: bold; }
+        .buku-besar-table td.col-periode { background-color: #e6f0ff; font-weight: bold; }
+        .buku-besar-table td.col-nopol { font-family: monospace; font-weight: bold; }
+        .buku-besar-table td.col-rupiah { text-align: right; font-family: monospace; }
+        .buku-besar-summary { padding: 8px; background-color: #f0f0f0; border-top: 1px solid #808080; font-size: 11px; display: flex; gap: 15px; flex-wrap: wrap; }
 
-        /* ============ BUKU BESAR CSS ============ */
-        .filter-bar {
-            padding: 8px;
-            background-color: #d4d0c8;
-            border-bottom: 1px solid #808080;
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
+        /* ===== OCR CSS ===== */
+        #ocrWindow { width: 85%; height: 85%; top: 7.5%; left: 7.5%; display: none; }
+        .ocr-container { flex: 1; display: flex; flex-direction: column; overflow: auto; padding: 12px; background-color: white; }
+        .ocr-upload-area { padding: 20px; border: 2px dashed #004080; background-color: #f0f8ff; text-align: center; cursor: pointer; border-radius: 4px; margin-bottom: 12px; }
+        .ocr-upload-area:hover { background-color: #e6f0ff; }
+        .ocr-preview { max-width: 100%; max-height: 250px; border: 1px solid #c0c0c0; margin: 8px 0; }
+        .ocr-result { padding: 8px; background-color: #ffffcc; border: 1px solid #c0c0c0; margin: 8px 0; font-family: monospace; font-size: 10px; white-space: pre-wrap; word-break: break-all; max-height: 150px; overflow-y: auto; }
+        .ocr-progress { display: none; padding: 8px; background-color: #f0f0f0; margin: 8px 0; }
+        .ocr-buttons { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+        .ocr-buttons button { flex: 1; min-width: 80px; }
+        .file-selector-modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #d4d0c8; border: 2px solid #808080; padding: 12px; z-index: 10000; min-width: 300px; box-shadow: 0 0 10px rgba(0,0,0,0.3); }
+        .file-selector-modal select { width: 100%; padding: 8px; margin: 8px 0; border: 1px solid #808080; font-size: 11px; }
 
-        .filter-group {
-            display: flex;
-            gap: 5px;
-            align-items: center;
-        }
-
-        .filter-group label {
-            font-size: 11px;
-            font-weight: bold;
-        }
-
-        .filter-group select,
-        .filter-group input {
-            font-size: 11px;
-            padding: 2px 4px;
-            border: 1px solid #808080;
-            background-color: white;
-            color: black;
-        }
-
-        .bukuBesar-container {
-            flex: 1;
-            overflow: auto;
-            padding: 8px;
-            background-color: white;
-        }
-
-        .bukuBesar-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 11px;
-            background-color: white;
-        }
-
-        .bukuBesar-table thead {
-            background-color: #000080;
-            color: white;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-
-        .bukuBesar-table th {
-            padding: 4px 6px;
-            text-align: left;
-            border: 1px solid #c0c0c0;
-            font-weight: bold;
-            white-space: nowrap;
-            font-size: 10px;
-        }
-
-        .bukuBesar-table td {
-            padding: 4px 6px;
-            border: 1px solid #e0e0e0;
-        }
-
-        .bukuBesar-table tbody tr:nth-child(odd) {
-            background-color: #f5f5f5;
-        }
-
-        .bukuBesar-table tbody tr:hover {
-            background-color: #e6f0ff;
-        }
-
-        .bukuBesar-table td.col-mitra {
-            background-color: #ffffcc;
-            font-weight: bold;
-        }
-
-        .bukuBesar-table td.col-periode {
-            background-color: #e6f0ff;
-            font-weight: bold;
-        }
-
-        .bukuBesar-table td.col-nopol {
-            font-family: "Courier New", monospace;
-            font-weight: bold;
-        }
-
-        .bukuBesar-table td.col-rupiah {
-            text-align: right;
-            font-family: "Courier New", monospace;
-        }
-
-        .bukuBesar-status-lunas { color: green; font-weight: bold; }
-        .bukuBesar-status-proses { color: orange; font-weight: bold; }
-        .bukuBesar-status-belum { color: red; font-weight: bold; }
-
-        .bukuBesar-summary {
-            padding: 8px;
-            background-color: #f0f0f0;
-            border-top: 1px solid #808080;
-            font-size: 11px;
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-
-        .summary-item {
-            display: flex;
-            gap: 5px;
-            align-items: center;
-        }
-
-        /* ============ OCR WINDOW CSS ============ */
-        .ocr-container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: auto;
-            padding: 12px;
-            background-color: white;
-        }
-
-        .ocr-upload-area {
-            padding: 12px;
-            border: 2px dashed #000080;
-            background-color: #f0f8ff;
-            text-align: center;
-            cursor: pointer;
-            border-radius: 4px;
-            margin-bottom: 12px;
-        }
-
-        .ocr-upload-area:hover {
-            background-color: #e6f0ff;
-        }
-
-        .ocr-upload-area.dragover {
-            background-color: #cce5ff;
-            border-color: #0040ff;
-        }
-
-        .ocr-preview {
-            max-width: 100%;
-            max-height: 300px;
-            border: 1px solid #c0c0c0;
-            margin: 8px 0;
-        }
-
-        .ocr-progress {
-            padding: 8px;
-            background-color: #f0f0f0;
-            border-radius: 4px;
-            margin: 8px 0;
-            font-size: 11px;
-        }
-
-        .ocr-progress-bar {
-            width: 100%;
-            height: 20px;
-            background-color: #e0e0e0;
-            border: 1px solid #c0c0c0;
-            border-radius: 2px;
-            margin: 4px 0;
-            overflow: hidden;
-        }
-
-        .ocr-progress-fill {
-            height: 100%;
-            background-color: #0080ff;
-            transition: width 0.2s;
-        }
-
-        .ocr-result {
-            padding: 8px;
-            background-color: #ffffcc;
-            border: 1px solid #c0c0c0;
-            border-radius: 4px;
-            margin: 8px 0;
-            font-family: "Courier New", monospace;
-            font-size: 10px;
-            white-space: pre-wrap;
-            word-break: break-all;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-
-        .ocr-buttons {
-            display: flex;
-            gap: 8px;
-            margin-top: 12px;
-            flex-wrap: wrap;
-        }
-
-        .ocr-buttons button {
-            flex: 1;
-            min-width: 100px;
-        }
     </style>
 
-    <script async src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
-</head>
-<body>
-
-    <div class="desktop-area">
-        <div class="desktop-icon" onclick="bukaJendelaWindow('mainExplorerWindow')">
-            <div class="icon-img">💻</div>
-            <div class="icon-text">My Computer</div>
-        </div>
-        <div class="desktop-icon" onclick="bukaJendelaBukuBesar()">
-            <div class="icon-img">📊</div>
-            <div class="icon-text">Buku Besar</div>
-        </div>
-        <div class="desktop-icon" onclick="bukaJendelaOCR()">
-            <div class="icon-img">📷</div>
-            <div class="icon-text">Import Gambar</div>
-        </div>
-    </div>
-
-    <!-- ====== MAIN EXPLORER WINDOW ====== -->
-    <div id="mainExplorerWindow" class="win95-window" onclick="fokusKeJendela('mainExplorerWindow')">
-        <div class="title-bar">
-            <div class="title-bar-text"><span>📁</span> Exploring - My Cloud Database (C:)</div>
-            <div class="title-bar-controls">
-                <button class="btn-control" onclick="minimizeJendela('mainExplorerWindow')">_</button>
-                <button class="btn-control" onclick="maximizeJendela('mainExplorerWindow')">⬜</button>
-                <button class="btn-control" onclick="tutupJendela('mainExplorerWindow')">✕</button>
-            </div>
-        </div>
-
-        <div class="menu-bar">
-            <div class="menu-item" onclick="buatFolderBaru()"><u>N</u>ew Folder</div>
-            <div class="menu-item" onclick="bukaFileTabelBaru()"><u>N</u>ew File</div>
-        </div>
-
-        <div class="toolbar">
-            <button class="btn-win95" onclick="pindahFolderKeBawah()" title="Go Back">⬅️ Back</button>
-            <button class="btn-win95" onclick="copyItemTerpilih()" id="btnCopy" disabled>📋 Copy</button>
-            <button class="btn-win95" onclick="pasteItemKeFolder()" id="btnPaste" disabled>📋 Paste</button>
-            <button class="btn-win95" onclick="hapusItemTerpilih()" id="btnDelete" disabled>🗑️ Delete</button>
-            <div class="address-bar" id="addressBar">C:\</div>
-            <div class="status-bar" id="dbStatus">Connecting...</div>
-        </div>
-
-        <div style="display: flex; flex: 1; overflow: hidden;">
-            <div class="left-panel" id="folderTreeView"></div>
-            <div class="main-content">
-                <div class="explorer-items" id="explorerItemsContainer"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ====== TABLE EDITOR WINDOW ====== -->
-    <div id="tableEditorWindow" class="win95-window" onclick="fokusKeJendela('tableEditorWindow')">
-        <div class="title-bar">
-            <div class="title-bar-text" id="editorFileName">📝 Jendela Tabel Rekapitulasi</div>
-            <div class="title-bar-controls">
-                <button class="btn-control" onclick="minimizeJendela('tableEditorWindow')">_</button>
-                <button class="btn-control" onclick="maximizeJendela('tableEditorWindow')">⬜</button>
-                <button class="btn-control" onclick="tutupJendela('tableEditorWindow')">✕</button>
-            </div>
-        </div>
-
-        <div class="toolbar">
-            <button class="btn-win95" onclick="tambahBaris()">➕ Add Row</button>
-            <button class="btn-win95" onclick="window.print()">🖨️ Print</button>
-            <button class="btn-win95" onclick="tutupJendela('tableEditorWindow')">❌ Close</button>
-        </div>
-
-        <div class="table-section">
-            <input type="text" id="docTitle" class="doc-title-input" placeholder="Judul Dokumen">
-
-            <div class="add-column-section">
-                <label>Tambah Kolom Baru:</label>
-                <input type="text" id="newColumnName" placeholder="Nama Kolom">
-                <select id="newColumnType">
-                    <option value="text">Teks</option>
-                    <option value="date">Tanggal</option>
-                    <option value="number">Nomor Saja</option>
-                    <option value="currency">Mata Uang (Rupiah)</option>
-                    <option value="status">Status (BELUM/PROSES/LUNAS)</option>
-                </select>
-                <button class="btn-win95" onclick="tambahKolomAwal()">Tambah</button>
-            </div>
-
-            <div class="table-wrapper">
-                <table id="dynamicTable">
-                    <thead><tr id="headerRow"></tr></thead>
-                    <tbody id="tableBody"></tbody>
-                    <tfoot><tr id="totalRow" class="row-total"></tr></tfoot>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- ====== BUKU BESAR WINDOW ====== -->
-    <div id="bukuBesarWindow" class="win95-window">
-        <div class="title-bar">
-            <div class="title-bar-text"><span>📊</span> Buku Besar - Rekap Semua Mitra & Periode</div>
-            <div class="title-bar-controls">
-                <button class="btn-control" onclick="minimizeJendela('bukuBesarWindow')">_</button>
-                <button class="btn-control" onclick="maximizeJendela('bukuBesarWindow')">⬜</button>
-                <button class="btn-control" onclick="tutupJendela('bukuBesarWindow')">✕</button>
-            </div>
-        </div>
-
-        <div class="filter-bar">
-            <div class="filter-group">
-                <label>🔎 Cari NOPOL:</label>
-                <input type="text" id="filterNopol" placeholder="Cth: B1234AB" oninput="filterBukuBesar()">
-            </div>
-            <div class="filter-group">
-                <label>📁 Mitra:</label>
-                <select id="filterMitra" onchange="filterBukuBesar()">
-                    <option value="">-- Semua Mitra --</option>
-                </select>
-            </div>
-            <div class="filter-group">
-                <label>📅 Periode:</label>
-                <select id="filterPeriode" onchange="filterBukuBesar()">
-                    <option value="">-- Semua Periode --</option>
-                </select>
-            </div>
-            <button class="btn-win95" onclick="exportBukuBesarKeCSV()">📥 Export CSV</button>
-        </div>
-
-        <div class="bukuBesar-container">
-            <table class="bukuBesar-table">
-                <thead>
-                    <tr id="bukuBesarHeader"></tr>
-                </thead>
-                <tbody id="bukuBesarBody">
-                    <tr><td colspan="10" style="text-align: center; padding: 20px;">Memuat data...</td></tr>
-                </tbody>
-            </table>
-        </div>
-
-        <div class="bukuBesar-summary">
-            <div class="summary-item">Total Baris: <strong id="summaryTotalBaris">0</strong></div>
-            <div class="summary-item">Total Nominal: <strong id="summaryTotalNominal">0</strong></div>
-            <div class="summary-item">Mitra: <strong id="summaryMitra">0</strong></div>
-        </div>
-    </div>
-
-    <!-- ====== OCR IMPORT WINDOW ====== -->
-    <div id="ocrWindow" class="win95-window">
-        <div class="title-bar">
-            <div class="title-bar-text"><span>📷</span> Import Data dari Gambar (OCR)</div>
-            <div class="title-bar-controls">
-                <button class="btn-control" onclick="minimizeJendela('ocrWindow')">_</button>
-                <button class="btn-control" onclick="maximizeJendela('ocrWindow')">⬜</button>
-                <button class="btn-control" onclick="tutupJendela('ocrWindow')">✕</button>
-            </div>
-        </div>
-
-        <div class="ocr-container">
-            <h3>📷 Upload Gambar Tabel (Screenshot)</h3>
-            <p style="font-size: 11px; color: #666;">Upload screenshot tabel dari Excel/spreadsheet, OCR akan membaca dan mengkonversi ke data yang bisa diimpor.</p>
-
-            <div class="ocr-upload-area" id="ocrUploadArea" onclick="document.getElementById('ocrFileInput').click()">
-                <div style="font-size: 32px; margin-bottom: 8px;">📁</div>
-                <div style="font-size: 12px; font-weight: bold;">Klik atau drag-drop gambar di sini</div>
-                <div style="font-size: 10px; color: #666;">Format: JPG, PNG, BMP (Ukuran maksimal: 10MB)</div>
-            </div>
-
-            <input type="file" id="ocrFileInput" accept="image/*" style="display: none;" onchange="handleOCRFileSelect(event)">
-
-            <img id="ocrPreview" class="ocr-preview" style="display: none;">
-
-            <div id="ocrProgress" class="ocr-progress" style="display: none;">
-                <div>Memproses OCR... Tunggu sebentar</div>
-                <div class="ocr-progress-bar">
-                    <div id="ocrProgressFill" class="ocr-progress-fill" style="width: 0%;"></div>
-                </div>
-                <div id="ocrProgressText" style="font-size: 10px; color: #666;">0%</div>
-            </div>
-
-            <div id="ocrResult" class="ocr-result" style="display: none;"></div>
-
-            <div class="ocr-buttons">
-                <button class="btn-win95" onclick="importOCRDataToTable()" id="btnImportOCR" disabled>✅ Import ke Tabel</button>
-                <button class="btn-win95" onclick="resetOCR()">🔄 Reset</button>
-            </div>
-
-            <div id="ocrMessage" style="margin-top: 12px; padding: 8px; background-color: #f0f0f0; border-radius: 4px; font-size: 11px; display: none;"></div>
-        </div>
-    </div>
-
-    <!-- TASKBAR -->
-    <div class="taskbar">
-        <button class="btn-start btn-win95" onclick="alert('Windows 95 Cloud Explorer v2.0\nPowered by Firebase ☁️')">🪟 Start</button>
-        <div style="flex: 1;"></div>
-        <div style="font-size: 11px; display: flex; gap: 10px; align-items: center;">
-            <span id="clockDisplay">00:00</span>
-        </div>
-    </div>
-
-    <!-- ====== JAVASCRIPT CODE ====== -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -689,8 +332,8 @@
             databaseURL: "https://tagihan-f4cf7-default-rtdb.asia-southeast1.firebasedatabase.app",
             projectId: "tagihan-f4cf7",
             storageBucket: "tagihan-f4cf7.firebasestorage.app",
-            messagingSenderId: "558944048213",
-            appId: "1:558944048213:web:4ccc1eb866a0f32ca31eb0"
+            messagingSenderId: "974025319428",
+            appId: "1:974025319428:web:ad7bd03f9e0b44c0840151"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -702,7 +345,6 @@
         window.selectedItemId = null;
         window.activeOpenedFileId = null;
         window.clipboardItemId = null;
-        window.ocrExtractedData = null;
 
         onValue(dbRef, (snapshot) => {
             const data = snapshot.val();
@@ -729,674 +371,905 @@
             .then(() => { document.getElementById("dbStatus").innerText = statusText; })
             .catch((err) => { document.getElementById("dbStatus").innerText = "Error: " + err.message; });
         }
-
-        // Clock update
-        setInterval(() => {
-            const now = new Date();
-            document.getElementById("clockDisplay").innerText = now.toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'});
-        }, 1000);
     </script>
 
-    <script>
-        // ================= WINDOW MANAGEMENT =================
-        function bukaJendelaWindow(windowId) { document.getElementById(windowId).style.display = 'flex'; }
-        function tutupJendela(windowId) { document.getElementById(windowId).style.display = 'none'; }
-        function minimizeJendela(windowId) { document.getElementById(windowId).style.display = 'none'; }
-        function maximizeJendela(windowId) { /* Simplified */ }
-        function fokusKeJendela(windowId) { const w = document.getElementById(windowId); w.parentNode.appendChild(w); }
+    <!-- OCR Library - Tesseract.js -->
+    <script async src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
 
-        // ================= EXPLORER NAVIGATION =================
-        function renderExplorer() {
-            renderFolderTree();
-            renderExplorerItems();
-            updateAddressBar();
+</head>
+<body>
+
+    <div class="desktop-area">
+        <div class="desktop-icon" onclick="bukaJendelaWindow('mainExplorerWindow')">
+            <div class="icon-img">💻</div>
+            <div class="icon-text">My Computer</div>
+        </div>
+        <div class="desktop-icon" onclick="bukaJendelaBukuBesar()">
+            <div class="icon-img">📊</div>
+            <div class="icon-text">Buku Besar</div>
+        </div>
+        <div class="desktop-icon" onclick="bukaJendelaOCR()">
+            <div class="icon-img">📷</div>
+            <div class="icon-text">Import Gambar</div>
+        </div>
+    </div>
+
+    <div id="mainExplorerWindow" class="win95-window" onclick="fokusKeJendela('mainExplorerWindow')">
+        <div class="title-bar">
+            <div class="title-bar-text"><span>📁</span> Exploring - My Cloud Database (C:)</div>
+            <div class="title-bar-controls">
+                <button class="btn-control" onclick="minimizeJendela('mainExplorerWindow')">_</button>
+                <button class="btn-control" onclick="maximizeJendela('mainExplorerWindow')">⬜</button>
+                <button class="btn-control" onclick="tutupJendelaWindow('mainExplorerWindow')">X</button>
+            </div>
+        </div>
+
+        <div class="menu-bar no-print">
+            <div class="menu-item" onclick="buatFolderBaru()"><u>N</u>ew Folder</div>
+            <div class="menu-item" onclick="buatFileBaru()">New <u>F</u>ile (Table)</div>
+        </div>
+
+        <div class="toolbar no-print">
+            <button class="btn-win95" onclick="navigasiKeAtas()">⬆️ Up</button>
+            <button class="btn-win95" id="btnOpenSelected" onclick="bukaItemTerpilih()" style="font-weight:bold;" disabled>➡️ Open</button>
+            <button class="btn-win95" id="btnRename" onclick="renameItemTerpilih()" disabled>✏️ Rename</button>
+            <button class="btn-win95" id="btnCut" onclick="cutItemTerpilih()" disabled>✂️ Cut</button>
+            <button class="btn-win95" id="btnPaste" onclick="pasteItemKeFolder()" disabled>📋 Paste</button>
+            <button class="btn-win95" onclick="hapusItemTerpilih()">❌ Delete</button>
+        </div>
+
+        <div class="address-bar-container no-print">
+            <span style="color:#555;">Address:</span>
+            <input type="text" id="addressInput" class="address-input" readonly value="C:\">
+        </div>
+
+        <div class="window-body">
+            <div class="left-panel" id="folderTreeView"></div>
+            <div class="right-panel" id="fileGridView" onclick="clearSelection(event)"></div>
+        </div>
+
+        <div class="status-bar no-print">
+            <div class="status-field" id="itemCountStatus" style="width:100px;">0 OBJECT(S)</div>
+            <div class="status-field" id="dbStatus" style="flex-grow:2; color:green; font-weight:bold;">Sistem Ready</div>
+        </div>
+    </div>
+
+
+    <div id="tableEditorWindow" class="win95-window" onclick="fokusKeJendela('tableEditorWindow')">
+        <div class="title-bar" style="background: linear-gradient(90deg, #004080, #1064a0);">
+            <div class="title-bar-text" id="editorFileName">📝 Jendela Tabel Rekapitulasi</div>
+            <div class="title-bar-controls">
+                <button class="btn-control" onclick="minimizeJendela('tableEditorWindow')">_</button>
+                <button class="btn-control" onclick="maximizeJendela('tableEditorWindow')">⬜</button>
+                <button class="btn-control" onclick="tutupFileTabelWindow()">X</button>
+            </div>
+        </div>
+
+        <div class="window-body" style="background:#fff; flex-direction:column;">
+            <div class="scrollable-editor-content">
+                <div class="doc-title-container">
+                    <input type="text" id="docTitle" class="editable-title" value="LAPORAN DATA" oninput="triggerTableAutoSave()">
+                </div>
+
+                <div class="control-panel no-print">
+                    <div class="input-group">
+                        <input type="text" id="newColumnName" placeholder="Nama Judul Kolom...">
+                        <select id="newColumnType">
+                            <option value="text">Teks Biasa</option>
+                            <option value="number">Nomor Saja</option>
+                            <option value="currency">Mata Uang (Rupiah)</option>
+                            <option value="date">Tanggal</option>
+                            <option value="status">Pilihan Status</option>
+                        </select>
+                        <button type="button" class="btn-win95" onclick="tambahKolomAwal()">+ Kolom</button>
+                    </div>
+                </div>
+
+                <div class="table-responsive-container">
+                    <table id="dynamicTable">
+                        <thead>
+                            <tr id="headerRow">
+                                <th style="width:30px;" data-type="system">NO</th>
+                                <th data-type="text">JUDUL KOLOM</th>
+                                <th class="action-col" style="width:40px;" data-type="system">AKSI</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody"></tbody>
+                        <tfoot>
+                            <tr id="totalRow" class="row-total"></tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <button type="button" class="btn-win95 no-print" onclick="tambahBaris()">+ Tambah Baris Kotak</button>
+                
+                <div style="text-align: right; margin-top:15px;" class="no-print">
+                    <button type="button" class="btn-win95" onclick="window.print()" style="background-color:#28a745; color:white; font-weight:bold;">🖨️ Cetak ke PDF</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="taskbar no-print">
+        <button class="btn-win95 btn-start" onclick="bukaJendelaWindow('mainExplorerWindow')">💾 Start</button>
+        <div style="border-left:1px solid #808080; border-right:1px solid #fff; height:22px; margin:0 2px;"></div>
+        <div style="font-size:11px; margin-left:auto; background: #d4d0c8; padding:2px 6px; border-top:1px solid #808080; border-left:1px solid #808080; border-bottom:1px solid #fff; border-right:1px solid #fff;">⏱️ 2026</div>
+    </div>
+
+    <!-- BUKU BESAR WINDOW -->
+    <div id="bukuBesarWindow" class="win95-window" onclick="fokusKeJendela('bukuBesarWindow')">
+        <div class="title-bar" style="background: linear-gradient(90deg, #004080, #1064a0);">
+            <div class="title-bar-text">📊 Buku Besar - Rekap Semua Mitra</div>
+            <div class="title-bar-controls">
+                <button class="btn-control" onclick="minimizeJendela('bukuBesarWindow')">_</button>
+                <button class="btn-control" onclick="maximizeJendela('bukuBesarWindow')">⬜</button>
+                <button class="btn-control" onclick="tutupJendelaWindow('bukuBesarWindow')">X</button>
+            </div>
+        </div>
+        <div class="buku-besar-filter no-print">
+            <label>🔎 NOPOL:</label>
+            <input type="text" id="filterNopol" placeholder="Cth: B1234AB" oninput="filterBukuBesar()">
+            <label>📁 Mitra:</label>
+            <select id="filterMitra" onchange="filterBukuBesar()"><option value="">-- Semua --</option></select>
+            <label>📅 Periode:</label>
+            <select id="filterPeriode" onchange="filterBukuBesar()"><option value="">-- Semua --</option></select>
+            <button class="btn-win95" onclick="exportBukuBesarKeCSV()">📥 Export CSV</button>
+        </div>
+        <div class="buku-besar-container">
+            <table class="buku-besar-table"><thead><tr id="bukuBesarHeader"></tr></thead><tbody id="bukuBesarBody"></tbody></table>
+        </div>
+        <div class="buku-besar-summary">
+            <span>Total: <strong id="summaryBaris">0</strong> baris</span>
+            <span>Nominal: <strong id="summaryNominal">0</strong></span>
+        </div>
+    </div>
+
+    <!-- OCR IMPORT WINDOW -->
+    <div id="ocrWindow" class="win95-window" onclick="fokusKeJendela('ocrWindow')">
+        <div class="title-bar" style="background: linear-gradient(90deg, #004080, #1064a0);">
+            <div class="title-bar-text">📷 Import Data dari Gambar (OCR)</div>
+            <div class="title-bar-controls">
+                <button class="btn-control" onclick="minimizeJendela('ocrWindow')">_</button>
+                <button class="btn-control" onclick="maximizeJendela('ocrWindow')">⬜</button>
+                <button class="btn-control" onclick="tutupJendelaWindow('ocrWindow')">X</button>
+            </div>
+        </div>
+        <div class="ocr-container">
+            <h3 style="margin-top:0;">📷 Upload Gambar Screenshot Tabel</h3>
+            <div class="ocr-upload-area" id="ocrUploadArea" onclick="document.getElementById('ocrFileInput').click()">
+                <div style="font-size:32px; margin-bottom:8px;">📁</div>
+                <div style="font-weight:bold;">Klik atau drag-drop gambar di sini</div>
+                <div style="font-size:10px; color:#666;">Format: JPG, PNG (Ukuran: max 10MB)</div>
+            </div>
+            <input type="file" id="ocrFileInput" accept="image/*" style="display: none;" onchange="handleOCRFileSelect(event)">
+            <img id="ocrPreview" class="ocr-preview" style="display: none;">
+            <div id="ocrProgress" class="ocr-progress">Memproses OCR... <div id="ocrProgressText" style="font-size:10px;">0%</div></div>
+            <div id="ocrResult" class="ocr-result" style="display: none;"></div>
+            <div class="ocr-buttons">
+                <button class="btn-win95" onclick="importOCRDataToTable()" id="btnImportOCR" disabled>✅ Import ke Tabel</button>
+                <button class="btn-win95" onclick="resetOCR()">🔄 Reset</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FILE SELECTOR MODAL untuk OCR -->
+    <div id="fileSelectorModal" class="file-selector-modal">
+        <div style="margin-bottom: 12px;"><strong>Pilih File Tujuan untuk Import Data OCR:</strong></div>
+        <select id="targetFileSelector" style="width: 100%; padding: 8px; border: 1px solid #808080;"></select>
+        <div style="display: flex; gap: 8px; margin-top: 12px; justify-content: flex-end;">
+            <button class="btn-win95" onclick="confirmOCRFileSelection()">✅ OK</button>
+            <button class="btn-win95" onclick="document.getElementById('fileSelectorModal').style.display='none';">❌ Batal</button>
+        </div>
+    </div>
+
+<script>
+    // ================= WINDOWS BOX CONTROLLER SYSTEM =================
+    function bukaJendelaWindow(windowId) {
+        document.getElementById(windowId).style.display = "flex";
+        fokusKeJendela(windowId);
+    }
+    function tutupJendelaWindow(windowId) {
+        document.getElementById(windowId).style.display = "none";
+    }
+    function minimizeJendela(windowId) {
+        document.getElementById(windowId).style.display = "none";
+    }
+    function maximizeJendela(windowId) {
+        let win = document.getElementById(windowId);
+        if(win.style.width === "100%") {
+            if(windowId === 'mainExplorerWindow') {
+                win.style.width = "95%"; win.style.height = "85%"; win.style.top = "5%"; win.style.left = "2.5%";
+            } else {
+                win.style.width = "90%"; win.style.height = "80%"; win.style.top = "10%"; win.style.left = "5%";
+            }
+        } else {
+            win.style.width = "100%"; win.style.height = "calc(100% - 38px)"; win.style.top = "0"; win.style.left = "0";
+        }
+    }
+    function fokusKeJendela(windowId) {
+        document.getElementById('mainExplorerWindow').style.zIndex = "10";
+        document.getElementById('tableEditorWindow').style.zIndex = "10";
+        document.getElementById(windowId).style.zIndex = "999";
+    }
+
+    function tutupFileTabelWindow() {
+        tutupJendelaWindow('tableEditorWindow');
+        window.activeOpenedFileId = null;
+        renderExplorer();
+    }
+
+    // ================= MAP CLOUD DATABASE EXPLORER =================
+    function renderExplorer() {
+        renderFolderTree();
+        renderFileGrid();
+        updateAddressBar();
+        updateToolbarButtons();
+    }
+
+    function renderFolderTree() {
+        const treeView = document.getElementById("folderTreeView");
+        if(!treeView) return;
+        treeView.innerHTML = `<div class="tree-item ${window.currentFolderId === 'root' ? 'active' : ''}" onclick="pindahFolder('root')">💻 My Cloud Database (C:)</div>`;
+        const container = document.createElement("div"); container.className = "tree-children";
+        for (let fId in window.EXPLORER_DATA.folders) {
+            if (window.EXPLORER_DATA.folders[fId].parent === "root") { buildTreeRow(fId, container); }
+        }
+        treeView.appendChild(container);
+    }
+
+    function buildTreeRow(folderId, containerEl) {
+        const folder = window.EXPLORER_DATA.folders[folderId];
+        const row = document.createElement("div");
+        row.className = `tree-item ${window.currentFolderId === folderId ? 'active' : ''}`;
+        row.innerHTML = `📁 ${folder.name}`;
+        row.onclick = (e) => { e.stopPropagation(); pindahFolder(folderId); };
+        containerEl.appendChild(row);
+
+        const childrenContainer = document.createElement("div");
+        childrenContainer.className = "tree-children";
+        for (let fId in window.EXPLORER_DATA.folders) {
+            if (window.EXPLORER_DATA.folders[fId].parent === folderId) { buildTreeRow(fId, childrenContainer); }
+        }
+        containerEl.appendChild(childrenContainer);
+    }
+
+    function renderFileGrid() {
+        const gridView = document.getElementById("fileGridView");
+        gridView.innerHTML = "";
+        let count = 0;
+
+        for (let fId in window.EXPLORER_DATA.folders) {
+            if (window.EXPLORER_DATA.folders[fId].parent === window.currentFolderId) {
+                count++;
+                const item = document.createElement("div");
+                item.className = `explorer-item ${window.selectedItemId === 'dir_' + fId ? 'selected' : ''}`;
+                item.innerHTML = `<div class="item-icon">📁</div><div class="item-name">${window.EXPLORER_DATA.folders[fId].name}</div>`;
+                item.onclick = (e) => { e.stopPropagation(); selectItem('dir_' + fId); };
+                item.ondblclick = () => pindahFolder(fId);
+                // Touch support untuk HP agar klik ganda lancar
+                item.addEventListener('touchend', (e) => {
+                    let now = new Date().getTime();
+                    let lastTouch = item.dataset.lastTouch || 0;
+                    if(now - lastTouch < 300) { pindahFolder(fId); }
+                    item.dataset.lastTouch = now;
+                });
+                gridView.appendChild(item);
+            }
         }
 
-        function renderFolderTree() {
-            const treeView = document.getElementById("folderTreeView");
-            treeView.innerHTML = `<div class="tree-item ${window.currentFolderId === 'root' ? 'active' : ''}" onclick="pindahFolder('root')">💻 My Cloud Database (C:)</div>`;
-            
-            function buildTreeRow(folderId, containerEl) {
-                const folder = window.EXPLORER_DATA.folders[folderId];
-                const row = document.createElement('div');
-                row.className = `tree-item ${window.currentFolderId === folderId ? 'active' : ''}`;
-                row.innerHTML = `📁 ${folder.name}`;
-                row.onclick = (e) => { e.stopPropagation(); pindahFolder(folderId); };
-                containerEl.appendChild(row);
-
-                const childrenContainer = document.createElement('div');
-                childrenContainer.className = 'tree-children';
-                containerEl.appendChild(childrenContainer);
-
-                for (let fId in window.EXPLORER_DATA.folders) {
-                    if (window.EXPLORER_DATA.folders[fId].parent === folderId) { buildTreeRow(fId, childrenContainer); }
-                }
-            }
-
-            for (let fId in window.EXPLORER_DATA.folders) {
-                if (window.EXPLORER_DATA.folders[fId].parent === "root") { buildTreeRow(fId, treeView); }
+        for (let fileId in window.EXPLORER_DATA.files) {
+            if (window.EXPLORER_DATA.files[fileId].folderId === window.currentFolderId) {
+                count++;
+                const item = document.createElement("div");
+                item.className = `explorer-item ${window.selectedItemId === 'file_' + fileId ? 'selected' : ''}`;
+                item.innerHTML = `<div class="item-icon">📄</div><div class="item-name">${window.EXPLORER_DATA.files[fileId].name}</div>`;
+                item.onclick = (e) => { e.stopPropagation(); selectItem('file_' + fileId); };
+                item.ondblclick = () => bukaFileTabel(fileId);
+                // Touch support untuk HP
+                item.addEventListener('touchend', (e) => {
+                    let now = new Date().getTime();
+                    let lastTouch = item.dataset.lastTouch || 0;
+                    if(now - lastTouch < 300) { bukaFileTabel(fileId); }
+                    item.dataset.lastTouch = now;
+                });
+                gridView.appendChild(item);
             }
         }
+        document.getElementById("itemCountStatus").innerText = `${count} OBJECT(S)`;
+    }
 
-        function renderExplorerItems() {
-            const container = document.getElementById("explorerItemsContainer");
-            container.innerHTML = "";
+    function pindahFolder(folderId) { window.currentFolderId = folderId; window.selectedItemId = null; renderExplorer(); }
+    function selectItem(itemId) { window.selectedItemId = itemId; renderExplorer(); }
+    function clearSelection(e) { window.selectedItemId = null; renderExplorer(); }
+    
+    function updateAddressBar() {
+        let path = ""; let current = window.currentFolderId;
+        while (current !== "root" && window.EXPLORER_DATA.folders[current]) {
+            path = "\\" + window.EXPLORER_DATA.folders[current].name + path;
+            current = window.EXPLORER_DATA.folders[current].parent;
+        }
+        document.getElementById("addressInput").value = "C:" + (path || "\\");
+    }
 
-            for (let fId in window.EXPLORER_DATA.folders) {
-                if (window.EXPLORER_DATA.folders[fId].parent === window.currentFolderId) {
-                    const item = document.createElement('div');
-                    item.className = `explorer-item ${window.selectedItemId === 'dir_' + fId ? 'selected' : ''}`;
-                    item.id = 'dir_' + fId;
-                    item.innerHTML = `<div class="item-icon">📁</div><div class="item-name">${window.EXPLORER_DATA.folders[fId].name}</div>`;
-                    item.onclick = () => { window.selectedItemId = 'dir_' + fId; renderExplorerItems(); updateButtonStates(); };
-                    item.ondblclick = () => pindahFolder(fId);
-                    let lastTouch = 0;
-                    item.addEventListener('touchend', () => {
-                        if(now - lastTouch < 300) { pindahFolder(fId); }
-                        lastTouch = Date.now();
-                    });
-                    container.appendChild(item);
+    function navigasiKeAtas() {
+        if (window.currentFolderId === "root") return;
+        pindahFolder(window.EXPLORER_DATA.folders[window.currentFolderId].parent);
+    }
+
+    function updateToolbarButtons() {
+        document.getElementById("btnOpenSelected").disabled = !window.selectedItemId;
+        document.getElementById("btnRename").disabled = !window.selectedItemId;
+        document.getElementById("btnCut").disabled = !window.selectedItemId;
+        document.getElementById("btnPaste").disabled = !window.clipboardItemId;
+    }
+
+    function bukaItemTerpilih() {
+        if (!window.selectedItemId) return;
+        if (window.selectedItemId.startsWith("dir_")) { pindahFolder(window.selectedItemId.replace("dir_", "")); } 
+        else { bukaFileTabel(window.selectedItemId.replace("file_", "")); }
+    }
+
+    function renameItemTerpilih() {
+        if (!window.selectedItemId) return;
+        if (window.selectedItemId.startsWith("dir_")) {
+            const id = window.selectedItemId.replace("dir_", "");
+            const n = prompt("Ubah nama Folder:", window.EXPLORER_DATA.folders[id].name);
+            if(n && n.trim() !== "") { window.EXPLORER_DATA.folders[id].name = n.trim(); saveExplorerToCloud(); }
+        } else {
+            const id = window.selectedItemId.replace("file_", "");
+            let n = prompt("Ubah nama File:", window.EXPLORER_DATA.files[id].name);
+            if(n && n.trim() !== "") { if(!n.endsWith(".json")) n+=".json"; window.EXPLORER_DATA.files[id].name = n.trim(); saveExplorerToCloud(); }
+        }
+    }
+
+    function cutItemTerpilih() { window.clipboardItemId = window.selectedItemId; renderExplorer(); }
+    function pasteItemKeFolder() {
+        if (!window.clipboardItemId) return;
+        if (window.clipboardItemId.startsWith("dir_")) {
+            window.EXPLORER_DATA.folders[window.clipboardItemId.replace("dir_", "")].parent = window.currentFolderId;
+        } else {
+            window.EXPLORER_DATA.files[window.clipboardItemId.replace("file_", "")].folderId = window.currentFolderId;
+        }
+        window.clipboardItemId = null; window.selectedItemId = null; saveExplorerToCloud();
+    }
+
+    function buatFolderBaru() {
+        const n = prompt("Nama Folder Baru:"); if(!n) return;
+        const id = "fld_" + Date.now(); window.EXPLORER_DATA.folders[id] = { name: n.trim(), parent: window.currentFolderId };
+        saveExplorerToCloud();
+    }
+
+    function buatFileBaru() {
+        const n = prompt("Nama File Rekap:"); if(!n) return;
+        let fix = n.trim(); if(!fix.endsWith(".json")) fix += ".json";
+        const id = "fil_" + Date.now();
+        window.EXPLORER_DATA.files[id] = {
+            name: fix, folderId: window.currentFolderId,
+            content: { title: fix.replace(".json","").toUpperCase(), columns: [{name:"TANGGAL", type:"date"}, {name:"NO KONTRAK", type:"text"}], rows:[["",""]] }
+        };
+        saveExplorerToCloud();
+    }
+
+    function hapusItemTerpilih() {
+        if(!window.selectedItemId || !confirm("Hapus Permanen?")) return;
+        if (window.selectedItemId.startsWith("dir_")) {
+            delete window.EXPLORER_DATA.folders[window.selectedItemId.replace("dir_", "")];
+        } else {
+            delete window.EXPLORER_DATA.files[window.selectedItemId.replace("file_", "")];
+        }
+        window.selectedItemId = null; saveExplorerToCloud();
+    }
+
+    // ================= DATA EDITOR LOGIC =================
+    function bukaFileTabel(fileId) {
+        window.activeOpenedFileId = fileId;
+        const file = window.EXPLORER_DATA.files[fileId];
+        document.getElementById("editorFileName").innerText = `📄 Dokumen: [ ${file.name} ]`;
+        bukaJendelaWindow('tableEditorWindow');
+        muatUlangTabelDariJSON(file.content);
+    }
+
+    let fileSaveTimeout;
+    function triggerTableAutoSave() {
+        if (!window.activeOpenedFileId) return;
+        clearTimeout(fileSaveTimeout);
+        fileSaveTimeout = setTimeout(() => {
+            window.EXPLORER_DATA.files[window.activeOpenedFileId].content = eksporStrukturTabelKeJSON();
+            saveExplorerToCloud("Tabel Auto-Saved");
+        }, 800);
+    }
+
+    function generateCellHTML(cell, type, value) {
+        if (type === 'currency') {
+            cell.innerHTML = `<input type="text" class="table-input text-right" value="${value}" oninput="formatRupiah(this)"><div class="print-text text-right">${value||0}</div>`;
+        } else if (type === 'number') {
+            cell.innerHTML = `<input type="number" class="table-input text-center" value="${value}" oninput="updatePrintText(this)"><div class="print-text text-center">${value||0}</div>`;
+        } else if (type === 'date') {
+            cell.innerHTML = `<input type="date" class="table-input text-center" value="${value}" oninput="updatePrintText(this)"><div class="print-text text-center">${value}</div>`;
+        } else if (type === 'status') {
+            let sLunas = value==='LUNAS'?'selected':''; let sProses = value==='PROSES'?'selected':''; let sBelum = value==='BELUM'?'selected':'';
+            cell.innerHTML = `<select class="table-select text-center" onchange="updatePrintText(this)"><option value="BELUM" ${sBelum}>🔴 BELUM</option><option value="PROSES" ${sProses}>🟡 PROSES</option><option value="LUNAS" ${sLunas}>🟢 LUNAS</option></select><div class="print-text text-center">${value||'BELUM'}</div>`;
+        } else {
+            cell.innerHTML = `<input type="text" class="table-input" value="${value}" oninput="updatePrintText(this)"><div class="print-text">${value}</div>`;
+        }
+    }
+
+    function updatePrintText(input) {
+        var parentCell = input.parentElement; var printTextDiv = parentCell.querySelector('.print-text');
+        if (printTextDiv) { printTextDiv.innerText = input.value; }
+        hitungTotalMataUangDanNomor(); triggerTableAutoSave();
+    }
+
+    function formatRupiah(input) {
+        var value = input.value.replace(/\D/g, ""); if (value === "") { input.value = ""; updatePrintText(input); return; }
+        input.value = parseInt(value, 10).toLocaleString('id-ID'); updatePrintText(input);
+    }
+
+    function rebuildFooter() {
+        var headerRow = document.getElementById("headerRow"); var totalRow = document.getElementById("totalRow");
+        if (!totalRow) return; totalRow.innerHTML = ""; var totalCols = headerRow.cells.length;
+        var firstCell = totalRow.insertCell(0); firstCell.className = "text-right"; firstCell.innerText = "TOTAL :";
+        for (var i = 1; i < totalCols; i++) {
+            var cell = totalRow.insertCell(i); var colType = headerRow.cells[i].getAttribute('data-type');
+            if (i === totalCols - 1) { cell.className = "action-col"; } 
+            else if (colType === 'currency' || colType === 'number') { cell.className = "text-right"; cell.innerText = "0"; }
+        }
+        hitungTotalMataUangDanNomor();
+    }
+
+    function tambahKolomAwal() {
+        var columnName = document.getElementById("newColumnName").value.trim(); var columnType = document.getElementById("newColumnType").value;
+        if (columnName === "") return;
+        var table = document.getElementById("dynamicTable"); var headerRow = document.getElementById("headerRow");
+        var th = document.createElement('th'); th.setAttribute('data-type', columnType);
+        th.innerHTML = columnName + `<div class="col-controls no-print"><button class="btn-nav" onclick="geserKolom(this, -1)">◀</button><button class="btn-nav" onclick="geserKolom(this, 1)">▶</button><button class="btn-del-col" onclick="hapusKolomSpesifik(this)">X</button></div>`;
+        headerRow.insertBefore(th, headerRow.cells[headerRow.cells.length - 1]);
+        var tbodyRows = table.getElementsByTagName('tbody')[0].rows;
+        for (var i = 0; i < tbodyRows.length; i++) { generateCellHTML(tbodyRows[i].insertCell(tbodyRows[i].cells.length - 1), columnType, ""); }
+        document.getElementById("newColumnName").value = ""; rebuildFooter(); triggerTableAutoSave();
+    }
+
+    function hapusKolomSpesifik(button) {
+        var th = button.closest('th'); var index = th.cellIndex; var table = document.getElementById("dynamicTable");
+        document.getElementById("headerRow").deleteCell(index);
+        var tbodyRows = table.getElementsByTagName('tbody')[0].rows;
+        for (var i = 0; i < tbodyRows.length; i++) { tbodyRows[i].deleteCell(index); }
+        rebuildFooter(); triggerTableAutoSave();
+    }
+
+    function geserKolom(button, direction) {
+        var th = button.closest('th'); var index = th.cellIndex; var headerRow = document.getElementById("headerRow"); var targetIndex = index + direction;
+        if (targetIndex <= 0 || targetIndex >= headerRow.cells.length - 1) return;
+        if (direction === 1) { headerRow.insertBefore(headerRow.cells[targetIndex], th); } else { headerRow.insertBefore(th, headerRow.cells[targetIndex]); }
+        var tbodyRows = document.getElementById("dynamicTable").getElementsByTagName('tbody')[0].rows;
+        for (var i = 0; i < tbodyRows.length; i++) {
+            if (direction === 1) { tbodyRows[i].insertBefore(tbodyRows[i].cells[targetIndex], tbodyRows[i].cells[index]); } else { tbodyRows[i].insertBefore(tbodyRows[i].cells[index], tbodyRows[i].cells[targetIndex]); }
+        }
+        rebuildFooter(); triggerTableAutoSave();
+    }
+
+    function tambahBaris() {
+        var headerRow = document.getElementById("headerRow"); var tbody = document.getElementById("tableBody");
+        var newRow = tbody.insertRow(-1); var totalCols = headerRow.cells.length;
+        for (var i = 0; i < totalCols; i++) {
+            var cell = newRow.insertCell(i); var colType = headerRow.cells[i].getAttribute('data-type');
+            if (i === 0) { cell.className = "text-center row-number"; } 
+            else if (i === totalCols - 1) { cell.className = "action-col text-center"; cell.innerHTML = `<button type="button" class="btn-del-row" onclick="hapusBaris(this)">X</button>`; } 
+            else { generateCellHTML(cell, colType, ""); }
+        }
+        updateNomorDanTotal(); triggerTableAutoSave();
+    }
+
+    function hapusBaris(button) { button.closest('tr').remove(); updateNomorDanTotal(); hitungTotalMataUangDanNomor(); triggerTableAutoSave(); }
+
+    function hitungTotalMataUangDanNomor() {
+        var headerRow = document.getElementById("headerRow"); var tbodyRows = document.getElementById("tableBody").rows; var totalRow = document.getElementById("totalRow");
+        if(!totalRow || totalRow.cells.length === 0) return;
+        for (var colIndex = 1; colIndex < headerRow.cells.length - 1; colIndex++) {
+            var colType = headerRow.cells[colIndex].getAttribute('data-type');
+            if (colType === 'currency' || colType === 'number') {
+                var grandTotal = 0;
+                for (var rowIndex = 0; rowIndex < tbodyRows.length; rowIndex++) {
+                    var inputEl = tbodyRows[rowIndex].cells[colIndex].querySelector('input');
+                    if (inputEl) { grandTotal += parseFloat(inputEl.value.replace(/\./g, "")) || 0; }
                 }
+                totalRow.cells[colIndex].innerText = colType === 'currency' ? grandTotal.toLocaleString('id-ID') : grandTotal;
             }
+        }
+    }
 
-            for (let fileId in window.EXPLORER_DATA.files) {
-                if (window.EXPLORER_DATA.files[fileId].folderId === window.currentFolderId) {
+    function updateNomorDanTotal() {
+        var rows = document.getElementById("tableBody").rows;
+        for (var i = 0; i < rows.length; i++) { rows[i].querySelector('.row-number').innerText = i + 1; }
+    }
+
+    function eksporStrukturTabelKeJSON() {
+        const title = document.getElementById("docTitle").value; const headerRow = document.getElementById("headerRow"); const tbodyRows = document.getElementById("tableBody").rows;
+        const columns = [];
+        for (let i = 1; i < headerRow.cells.length - 1; i++) { columns.push({ name: headerRow.cells[i].firstChild.textContent.trim(), type: headerRow.cells[i].getAttribute('data-type') }); }
+        const rows = [];
+        for (let i = 0; i < tbodyRows.length; i++) {
+            const rowData = [];
+            for (let j = 1; j < tbodyRows[i].cells.length - 1; j++) { rowData.push(tbodyRows[i].cells[j].querySelector('input, select').value); }
+            rows.push(rowData);
+        }
+        return { title, columns, rows };
+    }
+
+    function muatUlangTabelDariJSON(data) {
+        if(!data) return;
+        document.getElementById("docTitle").value = data.title || "LAPORAN DATA";
+        const headerRow = document.getElementById("headerRow");
+        headerRow.innerHTML = `<th style="width:30px;" data-type="system">NO</th><th class="action-col" style="width:40px;" data-type="system">AKSI</th>`;
+        if (data.columns) {
+            data.columns.forEach(col => {
+                const th = document.createElement('th'); th.setAttribute('data-type', col.type);
+                th.innerHTML = col.name + `<div class="col-controls no-print"><button class="btn-nav" onclick="geserKolom(this, -1)">◀</button><button class="btn-nav" onclick="geserKolom(this, 1)">▶</button><button class="btn-del-col" onclick="hapusKolomSpesifik(this)">X</button></div>`;
+                headerRow.insertBefore(th, headerRow.cells[headerRow.cells.length - 1]);
+            });
+        }
+        const tbody = document.getElementById("tableBody"); tbody.innerHTML = "";
+        if (data.rows) {
+            data.rows.forEach((row, rIndex) => {
+                const newRow = tbody.insertRow(-1); var cellNo = newRow.insertCell(0); cellNo.className = "text-center row-number"; cellNo.innerText = rIndex + 1;
+                row.forEach((val, cIndex) => { generateCellHTML(newRow.insertCell(cIndex + 1), data.columns[cIndex].type, val); });
+                var cellAksi = newRow.insertCell(newRow.cells.length); cellAksi.className = "action-col text-center"; cellAksi.innerHTML = `<button type="button" class="btn-del-row" onclick="hapusBaris(this)">X</button>`;
+            });
+        }
+        updateNomorDanTotal(); rebuildFooter();
+    }
+
+    // ================= BUKU BESAR FUNCTIONS =================
+    function bukaJendelaBukuBesar() { 
+        bukaJendelaWindow('bukuBesarWindow'); 
+        loadBukuBesar(); 
+    }
+
+    function extractPeriodeFromFileName(fileName) {
+        let name = fileName.replace('.json', '');
+        return name.replace('_', ' ');
+    }
+
+    function getAllMitraAndPeriodeData() {
+        let allData = [];
+        let mitraSet = new Set();
+        let periodeSet = new Set();
+
+        for (let folderId in window.EXPLORER_DATA.folders) {
+            const folder = window.EXPLORER_DATA.folders[folderId];
+            if (folder.parent === "root") {
+                const mitraName = folder.name;
+                mitraSet.add(mitraName);
+
+                for (let fileId in window.EXPLORER_DATA.files) {
                     const file = window.EXPLORER_DATA.files[fileId];
-                    const item = document.createElement('div');
-                    item.className = `explorer-item ${window.selectedItemId === 'file_' + fileId ? 'selected' : ''}`;
-                    item.id = 'file_' + fileId;
-                    item.innerHTML = `<div class="item-icon">📄</div><div class="item-name">${file.name}</div>`;
-                    item.onclick = () => { window.selectedItemId = 'file_' + fileId; renderExplorerItems(); updateButtonStates(); };
-                    item.ondblclick = () => bukaFileTabel(fileId);
-                    container.appendChild(item);
-                }
-            }
-        }
+                    if (file.folderId === folderId && file.content) {
+                        const periode = extractPeriodeFromFileName(file.name);
+                        periodeSet.add(periode);
 
-        function updateAddressBar() {
-            let path = "C:"; let current = window.currentFolderId;
-            while (current !== "root" && window.EXPLORER_DATA.folders[current]) {
-                path = "\\" + window.EXPLORER_DATA.folders[current].name + path;
-                current = window.EXPLORER_DATA.folders[current].parent;
-            }
-            document.getElementById("addressBar").innerText = path;
-        }
+                        const columns = file.content.columns || [];
+                        const rows = file.content.rows || [];
 
-        function pindahFolder(folderId) { window.currentFolderId = folderId; window.selectedItemId = null; renderExplorer(); updateButtonStates(); }
-        function pindahFolderKeBawah() { if (window.currentFolderId === "root") return; pindahFolder(window.EXPLORER_DATA.folders[window.currentFolderId].parent); }
-
-        function updateButtonStates() {
-            document.getElementById("btnCopy").disabled = !window.selectedItemId;
-            document.getElementById("btnDelete").disabled = !window.selectedItemId;
-            document.getElementById("btnPaste").disabled = !window.clipboardItemId;
-        }
-
-        function copyItemTerpilih() { if(window.selectedItemId) window.clipboardItemId = window.selectedItemId; updateButtonStates(); }
-
-        function pasteItemKeFolder() {
-            if (!window.clipboardItemId) return;
-            if (window.clipboardItemId.startsWith("dir_")) {
-                window.EXPLORER_DATA.folders[window.clipboardItemId.replace("dir_", "")].parent = window.currentFolderId;
-            } else {
-                window.EXPLORER_DATA.files[window.clipboardItemId.replace("file_", "")].folderId = window.currentFolderId;
-            }
-            window.clipboardItemId = null; window.selectedItemId = null; saveExplorerToCloud();
-        }
-
-        function buatFolderBaru() {
-            const n = prompt("Nama Folder Baru:"); if(!n) return;
-            const id = "fld_" + Date.now(); window.EXPLORER_DATA.folders[id] = { name: n.trim(), parent: window.currentFolderId };
-            saveExplorerToCloud();
-        }
-
-        function bukaFileTabelBaru() {
-            let n = prompt("Nama File Baru (misal: Mei_2026):"); if(!n) return;
-            let fix = n.trim(); if(!fix.endsWith(".json")) fix += ".json";
-            const id = "file_" + Date.now();
-            window.EXPLORER_DATA.files[id] = {
-                name: fix, folderId: window.currentFolderId,
-                content: { title: fix.replace(".json","").toUpperCase(), columns: [{name:"TANGGAL", type:"date"}, {name:"NO KONTRAK", type:"text"}], rows:[["",""]] }
-            };
-            saveExplorerToCloud();
-        }
-
-        function hapusItemTerpilih() {
-            if(!window.selectedItemId || !confirm("Hapus Permanen?")) return;
-            if (window.selectedItemId.startsWith("dir_")) {
-                delete window.EXPLORER_DATA.folders[window.selectedItemId.replace("dir_", "")];
-            } else {
-                delete window.EXPLORER_DATA.files[window.selectedItemId.replace("file_", "")];
-            }
-            window.selectedItemId = null; saveExplorerToCloud();
-        }
-
-        // ================= DATA EDITOR LOGIC =================
-        function bukaFileTabel(fileId) {
-            window.activeOpenedFileId = fileId;
-            const file = window.EXPLORER_DATA.files[fileId];
-            document.getElementById("editorFileName").innerText = `📄 Dokumen: [ ${file.name} ]`;
-            bukaJendelaWindow('tableEditorWindow');
-            muatUlangTabelDariJSON(file.content);
-        }
-
-        let fileSaveTimeout;
-        function triggerTableAutoSave() {
-            if (!window.activeOpenedFileId) return;
-            clearTimeout(fileSaveTimeout);
-            fileSaveTimeout = setTimeout(() => {
-                window.EXPLORER_DATA.files[window.activeOpenedFileId].content = eksporStrukturTabelKeJSON();
-                saveExplorerToCloud("Tabel Auto-Saved");
-            }, 800);
-        }
-
-        function generateCellHTML(cell, type, value) {
-            if (type === 'currency') {
-                cell.innerHTML = `<input type="text" class="table-input text-right" value="${value}" oninput="formatRupiah(this)"><div class="print-text text-right">${value||0}</div>`;
-            } else if (type === 'number') {
-                cell.innerHTML = `<input type="number" class="table-input text-center" value="${value}" oninput="updatePrintText(this)"><div class="print-text text-center">${value||0}</div>`;
-            } else if (type === 'date') {
-                cell.innerHTML = `<input type="date" class="table-input text-center" value="${value}" oninput="updatePrintText(this)"><div class="print-text text-center">${value}</div>`;
-            } else if (type === 'status') {
-                let sLunas = value==='LUNAS'?'selected':''; let sProses = value==='PROSES'?'selected':''; let sBelum = value==='BELUM'?'selected':'';
-                cell.innerHTML = `<select class="table-select text-center" onchange="updatePrintText(this)"><option value="BELUM" ${sBelum}>🔴 BELUM</option><option value="PROSES" ${sProses}>🟡 PROSES</option><option value="LUNAS" ${sLunas}>🟢 LUNAS</option></select><div class="print-text text-center">${value||'BELUM'}</div>`;
-            } else {
-                cell.innerHTML = `<input type="text" class="table-input" value="${value}" oninput="updatePrintText(this)"><div class="print-text">${value}</div>`;
-            }
-        }
-
-        function updatePrintText(input) {
-            var parentCell = input.parentElement; var printTextDiv = parentCell.querySelector('.print-text');
-            if (printTextDiv) { printTextDiv.innerText = input.value; }
-            hitungTotalMataUangDanNomor(); triggerTableAutoSave();
-        }
-
-        function formatRupiah(input) {
-            var value = input.value.replace(/\D/g, ""); if (value === "") { input.value = ""; updatePrintText(input); return; }
-            input.value = parseInt(value, 10).toLocaleString('id-ID'); updatePrintText(input);
-        }
-
-        function rebuildFooter() {
-            var headerRow = document.getElementById("headerRow"); var totalRow = document.getElementById("totalRow");
-            if (!totalRow) return; totalRow.innerHTML = ""; var totalCols = headerRow.cells.length;
-            var firstCell = totalRow.insertCell(0); firstCell.className = "text-right"; firstCell.innerText = "TOTAL :";
-            for (var i = 1; i < totalCols; i++) {
-                var cell = totalRow.insertCell(i); var colType = headerRow.cells[i].getAttribute('data-type');
-                if (i === totalCols - 1) { cell.className = "action-col"; } 
-                else if (colType === 'currency' || colType === 'number') { cell.className = "text-right"; cell.innerText = "0"; }
-            }
-            hitungTotalMataUangDanNomor();
-        }
-
-        function tambahKolomAwal() {
-            var columnName = document.getElementById("newColumnName").value.trim(); var columnType = document.getElementById("newColumnType").value;
-            if (columnName === "") return;
-            var table = document.getElementById("dynamicTable"); var headerRow = document.getElementById("headerRow");
-            var th = document.createElement('th'); th.setAttribute('data-type', columnType);
-            th.innerHTML = columnName + `<div class="col-controls no-print"><button class="btn-nav" onclick="geserKolom(this, -1)">◀</button><button class="btn-nav" onclick="geserKolom(this, 1)">▶</button><button class="btn-del-col" onclick="hapusKolomSpesifik(this)">X</button></div>`;
-            headerRow.insertBefore(th, headerRow.cells[headerRow.cells.length - 1]);
-            var tbodyRows = table.getElementsByTagName('tbody')[0].rows;
-            for (var i = 0; i < tbodyRows.length; i++) { generateCellHTML(tbodyRows[i].insertCell(tbodyRows[i].cells.length - 1), columnType, ""); }
-            document.getElementById("newColumnName").value = ""; rebuildFooter(); triggerTableAutoSave();
-        }
-
-        function hapusKolomSpesifik(button) {
-            var th = button.closest('th'); var index = th.cellIndex; var table = document.getElementById("dynamicTable");
-            document.getElementById("headerRow").deleteCell(index);
-            var tbodyRows = table.getElementsByTagName('tbody')[0].rows;
-            for (var i = 0; i < tbodyRows.length; i++) { tbodyRows[i].deleteCell(index); }
-            rebuildFooter(); triggerTableAutoSave();
-        }
-
-        function geserKolom(button, direction) {
-            var th = button.closest('th'); var index = th.cellIndex; var headerRow = document.getElementById("headerRow"); var targetIndex = index + direction;
-            if (targetIndex <= 0 || targetIndex >= headerRow.cells.length - 1) return;
-            if (direction === 1) { headerRow.insertBefore(headerRow.cells[targetIndex], th); } else { headerRow.insertBefore(th, headerRow.cells[targetIndex]); }
-            var tbodyRows = document.getElementById("dynamicTable").getElementsByTagName('tbody')[0].rows;
-            for (var i = 0; i < tbodyRows.length; i++) {
-                if (direction === 1) { tbodyRows[i].insertBefore(tbodyRows[i].cells[targetIndex], tbodyRows[i].cells[index]); } else { tbodyRows[i].insertBefore(tbodyRows[i].cells[index], tbodyRows[i].cells[targetIndex]); }
-            }
-            rebuildFooter(); triggerTableAutoSave();
-        }
-
-        function tambahBaris() {
-            var headerRow = document.getElementById("headerRow"); var tbody = document.getElementById("tableBody");
-            var newRow = tbody.insertRow(-1); var totalCols = headerRow.cells.length;
-            for (var i = 0; i < totalCols; i++) {
-                var cell = newRow.insertCell(i); var colType = headerRow.cells[i].getAttribute('data-type');
-                if (i === 0) { cell.className = "text-center row-number"; } 
-                else if (i === totalCols - 1) { cell.className = "action-col text-center"; cell.innerHTML = `<button type="button" class="btn-del-row" onclick="hapusBaris(this)">X</button>`; } 
-                else { generateCellHTML(cell, colType, ""); }
-            }
-            updateNomorDanTotal(); triggerTableAutoSave();
-        }
-
-        function hapusBaris(button) { button.closest('tr').remove(); updateNomorDanTotal(); hitungTotalMataUangDanNomor(); triggerTableAutoSave(); }
-
-        function hitungTotalMataUangDanNomor() {
-            var headerRow = document.getElementById("headerRow"); var tbodyRows = document.getElementById("tableBody").rows; var totalRow = document.getElementById("totalRow");
-            if(!totalRow || totalRow.cells.length === 0) return;
-            for (var colIndex = 1; colIndex < headerRow.cells.length - 1; colIndex++) {
-                var colType = headerRow.cells[colIndex].getAttribute('data-type');
-                if (colType === 'currency' || colType === 'number') {
-                    var grandTotal = 0;
-                    for (var rowIndex = 0; rowIndex < tbodyRows.length; rowIndex++) {
-                        var inputEl = tbodyRows[rowIndex].cells[colIndex].querySelector('input');
-                        if (inputEl) { grandTotal += parseFloat(inputEl.value.replace(/\./g, "")) || 0; }
-                    }
-                    totalRow.cells[colIndex].innerText = colType === 'currency' ? grandTotal.toLocaleString('id-ID') : grandTotal;
-                }
-            }
-        }
-
-        function updateNomorDanTotal() {
-            var rows = document.getElementById("tableBody").rows;
-            for (var i = 0; i < rows.length; i++) { rows[i].querySelector('.row-number').innerText = i + 1; }
-        }
-
-        function eksporStrukturTabelKeJSON() {
-            const title = document.getElementById("docTitle").value; const headerRow = document.getElementById("headerRow"); const tbodyRows = document.getElementById("tableBody").rows;
-            const columns = [];
-            for (let i = 1; i < headerRow.cells.length - 1; i++) { columns.push({ name: headerRow.cells[i].firstChild.textContent.trim(), type: headerRow.cells[i].getAttribute('data-type') }); }
-            const rows = [];
-            for (let i = 0; i < tbodyRows.length; i++) {
-                const rowData = [];
-                for (let j = 1; j < tbodyRows[i].cells.length - 1; j++) { rowData.push(tbodyRows[i].cells[j].querySelector('input, select').value); }
-                rows.push(rowData);
-            }
-            return { title, columns, rows };
-        }
-
-        function muatUlangTabelDariJSON(data) {
-            if(!data) return;
-            document.getElementById("docTitle").value = data.title || "LAPORAN DATA";
-            const headerRow = document.getElementById("headerRow");
-            headerRow.innerHTML = `<th style="width:30px;" data-type="system">NO</th><th class="action-col" style="width:40px;" data-type="system">AKSI</th>`;
-            if (data.columns) {
-                data.columns.forEach(col => {
-                    const th = document.createElement('th'); th.setAttribute('data-type', col.type);
-                    th.innerHTML = col.name + `<div class="col-controls no-print"><button class="btn-nav" onclick="geserKolom(this, -1)">◀</button><button class="btn-nav" onclick="geserKolom(this, 1)">▶</button><button class="btn-del-col" onclick="hapusKolomSpesifik(this)">X</button></div>`;
-                    headerRow.insertBefore(th, headerRow.cells[headerRow.cells.length - 1]);
-                });
-            }
-            const tbody = document.getElementById("tableBody"); tbody.innerHTML = "";
-            if (data.rows) {
-                data.rows.forEach((row, rIndex) => {
-                    const newRow = tbody.insertRow(-1); var cellNo = newRow.insertCell(0); cellNo.className = "text-center row-number"; cellNo.innerText = rIndex + 1;
-                    row.forEach((val, cIndex) => { generateCellHTML(newRow.insertCell(cIndex + 1), data.columns[cIndex].type, val); });
-                    var cellAksi = newRow.insertCell(newRow.cells.length); cellAksi.className = "action-col text-center"; cellAksi.innerHTML = `<button type="button" class="btn-del-row" onclick="hapusBaris(this)">X</button>`;
-                });
-            }
-            updateNomorDanTotal(); rebuildFooter();
-        }
-
-        // ================= BUKU BESAR FUNCTIONS =================
-        function bukaJendelaBukuBesar() {
-            bukaJendelaWindow('bukuBesarWindow');
-            loadBukuBesar();
-        }
-
-        function extractPeriodeFromFileName(fileName) {
-            let name = fileName.replace('.json', '');
-            return name.replace('_', ' ');
-        }
-
-        function getAllMitraAndPeriodeData() {
-            let allData = [];
-            let mitraSet = new Set();
-            let periodeSet = new Set();
-
-            for (let folderId in window.EXPLORER_DATA.folders) {
-                const folder = window.EXPLORER_DATA.folders[folderId];
-                if (folder.parent === "root") {
-                    const mitraName = folder.name;
-                    mitraSet.add(mitraName);
-
-                    for (let fileId in window.EXPLORER_DATA.files) {
-                        const file = window.EXPLORER_DATA.files[fileId];
-                        if (file.folderId === folderId && file.content) {
-                            const periode = extractPeriodeFromFileName(file.name);
-                            periodeSet.add(periode);
-
-                            const columns = file.content.columns || [];
-                            const rows = file.content.rows || [];
-
-                            rows.forEach((rowData, idx) => {
-                                let rowObj = {
-                                    mitra: mitraName,
-                                    periode: periode,
-                                    fileName: file.name,
-                                    fileId: fileId,
-                                    rowIndex: idx
-                                };
-
-                                columns.forEach((col, colIdx) => {
-                                    rowObj[col.name.toLowerCase().replace(/\s+/g, '_')] = rowData[colIdx] || '';
-                                    rowObj['_type_' + col.name.toLowerCase().replace(/\s+/g, '_')] = col.type;
-                                });
-
-                                allData.push(rowObj);
+                        rows.forEach((rowData, idx) => {
+                            let rowObj = { mitra: mitraName, periode: periode, fileName: file.name, fileId: fileId, rowIndex: idx };
+                            columns.forEach((col, colIdx) => {
+                                rowObj[col.name.toLowerCase().replace(/\s+/g, '_')] = rowData[colIdx] || '';
+                                rowObj['_type_' + col.name.toLowerCase().replace(/\s+/g, '_')] = col.type;
                             });
-                        }
+                            allData.push(rowObj);
+                        });
                     }
                 }
             }
-
-            return {
-                rows: allData,
-                mitras: Array.from(mitraSet).sort(),
-                periodes: Array.from(periodeSet).sort()
-            };
         }
 
-        function loadBukuBesar() {
-            const data = getAllMitraAndPeriodeData();
-            
-            const filterMitra = document.getElementById('filterMitra');
-            const filterPeriode = document.getElementById('filterPeriode');
-            
-            filterMitra.innerHTML = '<option value="">-- Semua Mitra --</option>';
-            data.mitras.forEach(mitra => {
-                filterMitra.innerHTML += `<option value="${mitra}">${mitra}</option>`;
+        return {
+            rows: allData,
+            mitras: Array.from(mitraSet).sort(),
+            periodes: Array.from(periodeSet).sort()
+        };
+    }
+
+    function loadBukuBesar() {
+        const data = getAllMitraAndPeriodeData();
+        
+        document.getElementById('filterMitra').innerHTML = '<option value="">-- Semua Mitra --</option>';
+        data.mitras.forEach(mitra => {
+            document.getElementById('filterMitra').innerHTML += `<option value="${mitra}">${mitra}</option>`;
+        });
+
+        document.getElementById('filterPeriode').innerHTML = '<option value="">-- Semua Periode --</option>';
+        data.periodes.forEach(periode => {
+            document.getElementById('filterPeriode').innerHTML += `<option value="${periode}">${periode}</option>`;
+        });
+
+        renderBukuBesar(data.rows);
+    }
+
+    function filterBukuBesar() {
+        const data = getAllMitraAndPeriodeData();
+        const filterNopol = (document.getElementById('filterNopol').value || '').toUpperCase();
+        const filterMitra = document.getElementById('filterMitra').value;
+        const filterPeriode = document.getElementById('filterPeriode').value;
+
+        let filtered = data.rows.filter(row => {
+            const nopol = (row.nopol || '').toUpperCase();
+            const matchNopol = filterNopol === '' || nopol.includes(filterNopol);
+            const matchMitra = filterMitra === '' || row.mitra === filterMitra;
+            const matchPeriode = filterPeriode === '' || row.periode === filterPeriode;
+            return matchNopol && matchMitra && matchPeriode;
+        });
+
+        renderBukuBesar(filtered);
+    }
+
+    function renderBukuBesar(rows) {
+        const headerRow = document.getElementById('bukuBesarHeader');
+        const tableBody = document.getElementById('bukuBesarBody');
+
+        let allColumns = new Set(['MITRA', 'PERIODE', 'NOPOL']);
+        rows.forEach(row => {
+            Object.keys(row).forEach(key => {
+                if (!key.startsWith('_') && !['mitra', 'periode', 'filename', 'fileid', 'rowindex', 'nopol'].includes(key)) {
+                    allColumns.add(key.toUpperCase());
+                }
             });
+        });
 
-            filterPeriode.innerHTML = '<option value="">-- Semua Periode --</option>';
-            data.periodes.forEach(periode => {
-                filterPeriode.innerHTML += `<option value="${periode}">${periode}</option>`;
-            });
+        headerRow.innerHTML = '';
+        const columns = ['MITRA', 'PERIODE', 'NOPOL', ...Array.from(allColumns).filter(c => !['MITRA', 'PERIODE', 'NOPOL'].includes(c)).sort()];
+        
+        columns.forEach(col => {
+            const th = document.createElement('th');
+            th.textContent = col;
+            headerRow.appendChild(th);
+        });
 
-            renderBukuBesar(data.rows);
-        }
-
-        function filterBukuBesar() {
-            const data = getAllMitraAndPeriodeData();
-            const filterNopol = document.getElementById('filterNopol').value.toUpperCase();
-            const filterMitra = document.getElementById('filterMitra').value;
-            const filterPeriode = document.getElementById('filterPeriode').value;
-
-            let filtered = data.rows.filter(row => {
-                const nopol = (row.nopol || '').toUpperCase();
-                const mitra = row.mitra;
-                const periode = row.periode;
-
-                const matchNopol = filterNopol === '' || nopol.includes(filterNopol);
-                const matchMitra = filterMitra === '' || mitra === filterMitra;
-                const matchPeriode = filterPeriode === '' || periode === filterPeriode;
-
-                return matchNopol && matchMitra && matchPeriode;
-            });
-
-            renderBukuBesar(filtered, data);
-        }
-
-        function renderBukuBesar(rows, allDataInfo = null) {
-            if (!allDataInfo) {
-                allDataInfo = getAllMitraAndPeriodeData();
-            }
-
-            const headerRow = document.getElementById('bukuBesarHeader');
-            const tableBody = document.getElementById('bukuBesarBody');
-
-            let allColumns = new Set(['MITRA', 'PERIODE', 'NOPOL']);
-            rows.forEach(row => {
-                Object.keys(row).forEach(key => {
-                    if (!key.startsWith('_') && !['mitra', 'periode', 'filename', 'fileid', 'rowindex', 'nopol'].includes(key)) {
-                        allColumns.add(key.toUpperCase());
-                    }
-                });
-            });
-
-            headerRow.innerHTML = '';
-            const columns = ['MITRA', 'PERIODE', 'NOPOL', ...Array.from(allColumns).filter(c => !['MITRA', 'PERIODE', 'NOPOL'].includes(c)).sort()];
-            
-            columns.forEach(col => {
-                const th = document.createElement('th');
-                th.textContent = col;
-                headerRow.appendChild(th);
-            });
-
-            tableBody.innerHTML = '';
-            if (rows.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="' + columns.length + '" style="text-align: center; padding: 20px;">Tidak ada data</td></tr>';
-            } else {
-                rows.forEach((row, idx) => {
-                    const tr = document.createElement('tr');
-                    columns.forEach(col => {
-                        const td = document.createElement('td');
-                        const colKey = col.toLowerCase().replace(/\s+/g, '_');
-                        let value = row[colKey] || '';
-
-                        if (col === 'MITRA') {
-                            td.className = 'col-mitra';
-                            td.textContent = value;
-                        } else if (col === 'PERIODE') {
-                            td.className = 'col-periode';
-                            td.textContent = value;
-                        } else if (col === 'NOPOL') {
-                            td.className = 'col-nopol';
-                            td.textContent = value;
-                        } else if (col === 'STATUS') {
-                            td.textContent = value;
-                            if (value === 'LUNAS') td.className = 'bukuBesar-status-lunas';
-                            else if (value === 'PROSES') td.className = 'bukuBesar-status-proses';
-                            else if (value === 'BELUM') td.className = 'bukuBesar-status-belum';
-                        } else if (row['_type_' + colKey] === 'currency') {
-                            td.className = 'col-rupiah';
-                            td.textContent = value ? parseInt(value.replace(/\D/g, '')).toLocaleString('id-ID') : '0';
-                        } else if (row['_type_' + colKey] === 'number') {
-                            td.className = 'col-rupiah';
-                            td.textContent = value;
-                        } else {
-                            td.textContent = value;
-                        }
-
-                        tr.appendChild(td);
-                    });
-                    tableBody.appendChild(tr);
-                });
-            }
-
-            document.getElementById('summaryTotalBaris').textContent = rows.length;
-            
-            let totalNominal = 0;
-            rows.forEach(row => {
-                const nominalRaw = (row.nominal || '').toString().replace(/\D/g, '');
-                totalNominal += parseInt(nominalRaw) || 0;
-            });
-            document.getElementById('summaryTotalNominal').textContent = totalNominal.toLocaleString('id-ID');
-            
-            const mitraCount = new Set(rows.map(r => r.mitra)).size;
-            document.getElementById('summaryMitra').textContent = mitraCount;
-        }
-
-        function exportBukuBesarKeCSV() {
-            const data = getAllMitraAndPeriodeData();
-            const filterNopol = document.getElementById('filterNopol').value.toUpperCase();
-            const filterMitra = document.getElementById('filterMitra').value;
-            const filterPeriode = document.getElementById('filterPeriode').value;
-
-            let filtered = data.rows.filter(row => {
-                const nopol = (row.nopol || '').toUpperCase();
-                const matchNopol = filterNopol === '' || nopol.includes(filterNopol);
-                const matchMitra = filterMitra === '' || row.mitra === filterMitra;
-                const matchPeriode = filterPeriode === '' || row.periode === filterPeriode;
-                return matchNopol && matchMitra && matchPeriode;
-            });
-
-            if (filtered.length === 0) { alert('Tidak ada data untuk diekspor'); return; }
-
-            let allColumns = new Set(['MITRA', 'PERIODE', 'NOPOL']);
-            filtered.forEach(row => {
-                Object.keys(row).forEach(key => {
-                    if (!key.startsWith('_') && !['mitra', 'periode', 'filename', 'fileid', 'rowindex', 'nopol'].includes(key)) {
-                        allColumns.add(key.toUpperCase());
-                    }
-                });
-            });
-
-            const columns = ['MITRA', 'PERIODE', 'NOPOL', ...Array.from(allColumns).filter(c => !['MITRA', 'PERIODE', 'NOPOL'].includes(c)).sort()];
-            
-            let csv = columns.join(',') + '\n';
-            filtered.forEach(row => {
-                const values = columns.map(col => {
+        tableBody.innerHTML = '';
+        if (rows.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="' + columns.length + '" style="text-align: center; padding: 20px;">Tidak ada data</td></tr>';
+        } else {
+            rows.forEach((row, idx) => {
+                const tr = document.createElement('tr');
+                columns.forEach(col => {
+                    const td = document.createElement('td');
                     const colKey = col.toLowerCase().replace(/\s+/g, '_');
-                    return '"' + (row[colKey] || '').toString().replace(/"/g, '""') + '"';
-                });
-                csv += values.join(',') + '\n';
-            });
+                    let value = row[colKey] || '';
 
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            const url = URL.createObjectURL(blob);
-            link.setAttribute('href', url);
-            link.setAttribute('download', 'BukuBesar_' + new Date().toISOString().split('T')[0] + '.csv');
-            link.style.visibility = 'hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        // ================= OCR FUNCTIONS =================
-        function bukaJendelaOCR() {
-            bukaJendelaWindow('ocrWindow');
-            resetOCR();
-        }
-
-        const ocrUploadArea = document.getElementById('ocrUploadArea');
-        ocrUploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            ocrUploadArea.classList.add('dragover');
-        });
-        ocrUploadArea.addEventListener('dragleave', () => {
-            ocrUploadArea.classList.remove('dragover');
-        });
-        ocrUploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            ocrUploadArea.classList.remove('dragover');
-            const files = e.dataTransfer.files;
-            if (files.length > 0) {
-                document.getElementById('ocrFileInput').files = files;
-                handleOCRFileSelect({ target: document.getElementById('ocrFileInput') });
-            }
-        });
-
-        async function handleOCRFileSelect(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = async (e) => {
-                const imageData = e.target.result;
-                document.getElementById('ocrPreview').src = imageData;
-                document.getElementById('ocrPreview').style.display = 'block';
-
-                await runOCR(imageData);
-            };
-            reader.readAsDataURL(file);
-        }
-
-        async function runOCR(imageData) {
-            const progressDiv = document.getElementById('ocrProgress');
-            const progressFill = document.getElementById('ocrProgressFill');
-            const progressText = document.getElementById('ocrProgressText');
-            progressDiv.style.display = 'block';
-
-            try {
-                const result = await Tesseract.recognize(imageData, 'ind', {
-                    logger: (m) => {
-                        if (m.status === 'recognizing') {
-                            const progress = Math.round(m.progress * 100);
-                            progressFill.style.width = progress + '%';
-                            progressText.innerText = progress + '%';
-                        }
+                    if (col === 'MITRA') {
+                        td.className = 'col-mitra';
+                        td.textContent = value;
+                    } else if (col === 'PERIODE') {
+                        td.className = 'col-periode';
+                        td.textContent = value;
+                    } else if (col === 'NOPOL') {
+                        td.className = 'col-nopol';
+                        td.textContent = value;
+                    } else if (row['_type_' + colKey] === 'currency') {
+                        td.className = 'col-rupiah';
+                        td.textContent = value ? parseInt(value.replace(/\D/g, '')).toLocaleString('id-ID') : '0';
+                    } else {
+                        td.textContent = value;
                     }
+
+                    tr.appendChild(td);
                 });
-
-                const text = result.data.text;
-                window.ocrExtractedData = parseOCRToTableData(text);
-
-                const resultDiv = document.getElementById('ocrResult');
-                resultDiv.innerText = text;
-                resultDiv.style.display = 'block';
-
-                document.getElementById('btnImportOCR').disabled = false;
-                progressDiv.style.display = 'none';
-
-                showOCRMessage('✅ OCR selesai! Klik "Import ke Tabel" untuk masukkan data.', 'success');
-            } catch (error) {
-                showOCRMessage('❌ Error OCR: ' + error.message, 'error');
-                progressDiv.style.display = 'none';
-            }
+                tableBody.appendChild(tr);
+            });
         }
 
-        function parseOCRToTableData(text) {
-            const lines = text.split('\n').filter(l => l.trim());
-            const rows = [];
+        document.getElementById('summaryBaris').textContent = rows.length;
+        
+        let totalNominal = 0;
+        rows.forEach(row => {
+            const nominalRaw = (row.nominal || '').toString().replace(/\D/g, '');
+            totalNominal += parseInt(nominalRaw) || 0;
+        });
+        document.getElementById('summaryNominal').textContent = totalNominal.toLocaleString('id-ID');
+    }
 
-            lines.forEach((line, idx) => {
-                if (idx === 0) return; // Skip header
-                const cells = line.split(/\s{2,}|\t/).map(c => c.trim()).filter(c => c);
-                if (cells.length > 0) {
-                    rows.push(cells);
+    function exportBukuBesarKeCSV() {
+        const data = getAllMitraAndPeriodeData();
+        const filterNopol = (document.getElementById('filterNopol').value || '').toUpperCase();
+        const filterMitra = document.getElementById('filterMitra').value;
+        const filterPeriode = document.getElementById('filterPeriode').value;
+
+        let filtered = data.rows.filter(row => {
+            const nopol = (row.nopol || '').toUpperCase();
+            const matchNopol = filterNopol === '' || nopol.includes(filterNopol);
+            const matchMitra = filterMitra === '' || row.mitra === filterMitra;
+            const matchPeriode = filterPeriode === '' || row.periode === filterPeriode;
+            return matchNopol && matchMitra && matchPeriode;
+        });
+
+        if (filtered.length === 0) { alert('Tidak ada data untuk diekspor'); return; }
+
+        let allColumns = new Set(['MITRA', 'PERIODE', 'NOPOL']);
+        filtered.forEach(row => {
+            Object.keys(row).forEach(key => {
+                if (!key.startsWith('_') && !['mitra', 'periode', 'filename', 'fileid', 'rowindex', 'nopol'].includes(key)) {
+                    allColumns.add(key.toUpperCase());
                 }
             });
+        });
 
-            return rows;
-        }
+        const columns = ['MITRA', 'PERIODE', 'NOPOL', ...Array.from(allColumns).filter(c => !['MITRA', 'PERIODE', 'NOPOL'].includes(c)).sort()];
+        
+        let csv = columns.join(',') + '\n';
+        filtered.forEach(row => {
+            const values = columns.map(col => {
+                const colKey = col.toLowerCase().replace(/\s+/g, '_');
+                return '"' + (row[colKey] || '').toString().replace(/"/g, '""') + '"';
+            });
+            csv += values.join(',') + '\n';
+        });
 
-        function importOCRDataToTable() {
-            if (!window.ocrExtractedData || !window.activeOpenedFileId) {
-                alert('Buka file tabel terlebih dahulu!');
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', 'BukuBesar_' + new Date().toISOString().split('T')[0] + '.csv');
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    // ================= OCR FUNCTIONS =================
+    function bukaJendelaOCR() {
+        bukaJendelaWindow('ocrWindow');
+        resetOCR();
+    }
+
+    async function handleOCRFileSelect(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            const imageData = e.target.result;
+            document.getElementById('ocrPreview').src = imageData;
+            document.getElementById('ocrPreview').style.display = 'block';
+
+            // Check if Tesseract is available
+            if (typeof Tesseract === 'undefined') {
+                alert('OCR library sedang dimuat... Coba lagi dalam beberapa detik');
                 return;
             }
 
-            const tbody = document.getElementById('tableBody');
-            const headerRow = document.getElementById('headerRow');
-            const columnCount = headerRow.cells.length - 2; // Exclude NO & AKSI
+            await runOCR(imageData);
+        };
+        reader.readAsDataURL(file);
+    }
 
-            window.ocrExtractedData.forEach(rowData => {
-                const newRow = tbody.insertRow(-1);
-                const cellNo = newRow.insertCell(0);
-                cellNo.className = 'text-center row-number';
-                cellNo.innerText = tbody.rows.length;
+    async function runOCR(imageData) {
+        const progressDiv = document.getElementById('ocrProgress');
+        const progressText = document.getElementById('ocrProgressText');
+        progressDiv.style.display = 'block';
 
-                for (let i = 0; i < columnCount; i++) {
-                    const cell = newRow.insertCell(i + 1);
-                    const colType = headerRow.cells[i + 1].getAttribute('data-type');
-                    const value = rowData[i] || '';
-                    generateCellHTML(cell, colType, value);
+        try {
+            const result = await Tesseract.recognize(imageData, 'ind', {
+                logger: (m) => {
+                    if (m.status === 'recognizing') {
+                        const progress = Math.round(m.progress * 100);
+                        progressText.innerText = progress + '%';
+                    }
                 }
-
-                const cellAksi = newRow.insertCell(newRow.cells.length);
-                cellAksi.className = 'action-col text-center';
-                cellAksi.innerHTML = `<button type="button" class="btn-del-row" onclick="hapusBaris(this)">X</button>`;
             });
 
-            updateNomorDanTotal();
-            hitungTotalMataUangDanNomor();
-            triggerTableAutoSave();
+            const text = result.data.text;
+            window.ocrExtractedData = parseOCRToTableData(text);
 
-            showOCRMessage('✅ ' + window.ocrExtractedData.length + ' baris data berhasil diimpor!', 'success');
-            setTimeout(() => { tutupJendela('ocrWindow'); }, 1500);
+            const resultDiv = document.getElementById('ocrResult');
+            resultDiv.innerText = text;
+            resultDiv.style.display = 'block';
+
+            document.getElementById('btnImportOCR').disabled = false;
+            progressDiv.style.display = 'none';
+        } catch (error) {
+            alert('Error OCR: ' + error.message);
+            progressDiv.style.display = 'none';
+        }
+    }
+
+    function parseOCRToTableData(text) {
+        const lines = text.split('\n').filter(l => l.trim());
+        const rows = [];
+
+        lines.forEach((line, idx) => {
+            if (idx === 0) return;
+            const cells = line.split(/\s{2,}|\t/).map(c => c.trim()).filter(c => c);
+            if (cells.length > 0) {
+                rows.push(cells);
+            }
+        });
+
+        return rows;
+    }
+
+    function importOCRDataToTable() {
+        if (!window.ocrExtractedData) {
+            alert('Tidak ada data OCR yang tersedia');
+            return;
         }
 
-        function resetOCR() {
-            document.getElementById('ocrFileInput').value = '';
-            document.getElementById('ocrPreview').style.display = 'none';
-            document.getElementById('ocrProgress').style.display = 'none';
-            document.getElementById('ocrResult').style.display = 'none';
-            document.getElementById('ocrMessage').style.display = 'none';
-            document.getElementById('btnImportOCR').disabled = true;
-            window.ocrExtractedData = null;
+        // Show file selector modal
+        showFileSelectorModal();
+    }
+
+    function showFileSelectorModal() {
+        const selector = document.getElementById('targetFileSelector');
+        selector.innerHTML = '';
+
+        for (let fileId in window.EXPLORER_DATA.files) {
+            const file = window.EXPLORER_DATA.files[fileId];
+            const option = document.createElement('option');
+            option.value = fileId;
+            option.textContent = file.name;
+            selector.appendChild(option);
         }
 
-        function showOCRMessage(msg, type) {
-            const msgDiv = document.getElementById('ocrMessage');
-            msgDiv.innerText = msg;
-            msgDiv.style.display = 'block';
-            msgDiv.style.backgroundColor = type === 'success' ? '#e8f5e9' : '#ffebee';
-            msgDiv.style.color = type === 'success' ? '#2e7d32' : '#c62828';
+        if (selector.options.length === 0) {
+            alert('Tidak ada file tabel. Buat file tabel terlebih dahulu!');
+            return;
         }
-    </script>
 
+        document.getElementById('fileSelectorModal').style.display = 'block';
+    }
+
+    function confirmOCRFileSelection() {
+        const fileId = document.getElementById('targetFileSelector').value;
+        if (!fileId) {
+            alert('Pilih file terlebih dahulu!');
+            return;
+        }
+
+        window.activeOpenedFileId = fileId;
+        const file = window.EXPLORER_DATA.files[fileId];
+        document.getElementById('editorFileName').innerText = `📄 Dokumen: [ ${file.name} ]`;
+        bukaJendelaWindow('tableEditorWindow');
+        muatUlangTabelDariJSON(file.content);
+
+        // Add OCR data to table
+        const tbody = document.getElementById('tableBody');
+        const headerRow = document.getElementById('headerRow');
+        const columnCount = headerRow.cells.length - 2;
+
+        window.ocrExtractedData.forEach(rowData => {
+            const newRow = tbody.insertRow(-1);
+            const cellNo = newRow.insertCell(0);
+            cellNo.className = 'text-center row-number';
+            cellNo.innerText = tbody.rows.length;
+
+            for (let i = 0; i < columnCount && i < rowData.length; i++) {
+                const cell = newRow.insertCell(i + 1);
+                const colType = headerRow.cells[i + 1].getAttribute('data-type');
+                const value = rowData[i] || '';
+                generateCellHTML(cell, colType, value);
+            }
+
+            const cellAksi = newRow.insertCell(newRow.cells.length);
+            cellAksi.className = 'action-col text-center';
+            cellAksi.innerHTML = `<button type="button" class="btn-del-row" onclick="hapusBaris(this)">❌</button>`;
+        });
+
+        updateNomorDanTotal();
+        hitungTotalMataUangDanNomor();
+        triggerTableAutoSave();
+
+        // Close modal dan OCR window
+        document.getElementById('fileSelectorModal').style.display = 'none';
+        setTimeout(() => { tutupJendelaWindow('ocrWindow'); }, 500);
+    }
+
+    function resetOCR() {
+        document.getElementById('ocrFileInput').value = '';
+        document.getElementById('ocrPreview').style.display = 'none';
+        document.getElementById('ocrProgress').style.display = 'none';
+        document.getElementById('ocrResult').style.display = 'none';
+        document.getElementById('btnImportOCR').disabled = true;
+        window.ocrExtractedData = null;
+    }
+</script>
 </body>
 </html>
