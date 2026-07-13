@@ -290,36 +290,25 @@
             .print-text { display: block !important; white-space: normal !important; word-wrap: break-word !important; }
             table { width: 100% !important; min-width: 100% !important; }
         }
-
-        /* ===== BUKU BESAR CSS ===== */
+        /* ===== TAMBAHAN: BUKU BESAR ===== */
         #bukuBesarWindow { width: 95%; height: 85%; top: 5%; left: 2.5%; display: none; }
-        .buku-besar-filter { padding: 8px; background-color: #d4d0c8; border-bottom: 1px solid #808080; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-        .buku-besar-filter select, .buku-besar-filter input { font-size: 11px; padding: 2px 4px; border: 1px solid #808080; background-color: white; }
-        .buku-besar-container { flex: 1; overflow: auto; padding: 8px; background-color: #fff; }
-        .buku-besar-table { width: 100%; border-collapse: collapse; font-size: 10px; background-color: white; }
-        .buku-besar-table thead { background-color: #004080; color: white; position: sticky; top: 0; }
-        .buku-besar-table th { padding: 4px; text-align: left; border: 1px solid #c0c0c0; font-weight: bold; white-space: nowrap; }
-        .buku-besar-table td { padding: 4px; border: 1px solid #e0e0e0; }
-        .buku-besar-table tbody tr:nth-child(odd) { background-color: #f5f5f5; }
-        .buku-besar-table td.col-mitra { background-color: #ffffcc; font-weight: bold; }
-        .buku-besar-table td.col-periode { background-color: #e6f0ff; font-weight: bold; }
-        .buku-besar-table td.col-nopol { font-family: monospace; font-weight: bold; }
-        .buku-besar-table td.col-rupiah { text-align: right; font-family: monospace; }
-        .buku-besar-summary { padding: 8px; background-color: #f0f0f0; border-top: 1px solid #808080; font-size: 11px; display: flex; gap: 15px; flex-wrap: wrap; }
-
-        /* ===== OCR CSS ===== */
-        #ocrWindow { width: 85%; height: 85%; top: 7.5%; left: 7.5%; display: none; }
-        .ocr-container { flex: 1; display: flex; flex-direction: column; overflow: auto; padding: 12px; background-color: white; }
-        .ocr-upload-area { padding: 20px; border: 2px dashed #004080; background-color: #f0f8ff; text-align: center; cursor: pointer; border-radius: 4px; margin-bottom: 12px; }
-        .ocr-upload-area:hover { background-color: #e6f0ff; }
-        .ocr-preview { max-width: 100%; max-height: 250px; border: 1px solid #c0c0c0; margin: 8px 0; }
-        .ocr-result { padding: 8px; background-color: #ffffcc; border: 1px solid #c0c0c0; margin: 8px 0; font-family: monospace; font-size: 10px; white-space: pre-wrap; word-break: break-all; max-height: 150px; overflow-y: auto; }
-        .ocr-progress { display: none; padding: 8px; background-color: #f0f0f0; margin: 8px 0; }
-        .ocr-buttons { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
-        .ocr-buttons button { flex: 1; min-width: 80px; }
-        .file-selector-modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #d4d0c8; border: 2px solid #808080; padding: 12px; z-index: 10000; min-width: 300px; box-shadow: 0 0 10px rgba(0,0,0,0.3); }
-        .file-selector-modal select { width: 100%; padding: 8px; margin: 8px 0; border: 1px solid #808080; font-size: 11px; }
-
+        .bb-toolbar { background-color: #d4d0c8; padding: 6px; display: flex; gap: 6px; flex-wrap: wrap; align-items: center; border-bottom: 2px solid #dfdfdf; }
+        .bb-toolbar label { font-size: 11px; font-weight: bold; }
+        .bb-toolbar select, .bb-toolbar input { font-size: 11px; padding: 3px; border: 1px solid #808080; background: #fff; }
+        .bb-cards { display: flex; gap: 8px; padding: 8px; background: #f0f0f0; flex-wrap: wrap; border-bottom: 1px solid #808080; }
+        .bb-card { flex: 1; min-width: 110px; background: #fff; border-top: 2px solid #fff; border-left: 2px solid #fff; border-right: 2px solid #808080; border-bottom: 2px solid #808080; padding: 6px 8px; }
+        .bb-card .lbl { font-size: 9px; color: #555; text-transform: uppercase; }
+        .bb-card .val { font-size: 14px; font-weight: bold; color: #000080; }
+        .bb-scroll { flex-grow: 1; overflow: auto; background: #fff; padding: 8px; -webkit-overflow-scrolling: touch; }
+        .bb-table { width: 100%; border-collapse: collapse; font-size: 11px; background: #fff; min-width: 700px; }
+        .bb-table th { background-color: #d4d0c8; border: 1px solid #808080; padding: 5px; text-align: left; white-space: nowrap; position: sticky; top: 0; }
+        .bb-table td { border: 1px solid #c0c0c0; padding: 4px 6px; white-space: nowrap; }
+        .bb-table tbody tr:nth-child(even) { background: #f5f5f5; }
+        .bb-mitra { background: #ffffcc !important; font-weight: bold; }
+        .bb-periode { background: #e6f0ff !important; font-weight: bold; }
+        .bb-nopol { font-family: monospace; font-weight: bold; }
+        .bb-dup { background: #ffd6d6 !important; }
+        .bb-num { text-align: right; font-family: monospace; }
     </style>
 
     <script type="module">
@@ -373,7 +362,7 @@
         }
     </script>
 
-    <!-- OCR Library - Tesseract.js -->
+    <!-- Tesseract.js OCR Library -->
     <script async src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
 
 </head>
@@ -384,13 +373,9 @@
             <div class="icon-img">💻</div>
             <div class="icon-text">My Computer</div>
         </div>
-        <div class="desktop-icon" onclick="bukaJendelaBukuBesar()">
+        <div class="desktop-icon" onclick="bukaBukuBesar()">
             <div class="icon-img">📊</div>
             <div class="icon-text">Buku Besar</div>
-        </div>
-        <div class="desktop-icon" onclick="bukaJendelaOCR()">
-            <div class="icon-img">📷</div>
-            <div class="icon-text">Import Gambar</div>
         </div>
     </div>
 
@@ -484,6 +469,7 @@
                 <button type="button" class="btn-win95 no-print" onclick="tambahBaris()">+ Tambah Baris Kotak</button>
                 
                 <div style="text-align: right; margin-top:15px;" class="no-print">
+                    <button type="button" class="btn-win95" onclick="bukaOCRUpload()" style="background-color:#4CAF50; color:white; font-weight:bold;">📷 Input Gambar (OCR)</button>
                     <button type="button" class="btn-win95" onclick="window.print()" style="background-color:#28a745; color:white; font-weight:bold;">🖨️ Cetak ke PDF</button>
                 </div>
             </div>
@@ -496,71 +482,6 @@
         <div style="font-size:11px; margin-left:auto; background: #d4d0c8; padding:2px 6px; border-top:1px solid #808080; border-left:1px solid #808080; border-bottom:1px solid #fff; border-right:1px solid #fff;">⏱️ 2026</div>
     </div>
 
-    <!-- BUKU BESAR WINDOW -->
-    <div id="bukuBesarWindow" class="win95-window" onclick="fokusKeJendela('bukuBesarWindow')">
-        <div class="title-bar" style="background: linear-gradient(90deg, #004080, #1064a0);">
-            <div class="title-bar-text">📊 Buku Besar - Rekap Semua Mitra</div>
-            <div class="title-bar-controls">
-                <button class="btn-control" onclick="minimizeJendela('bukuBesarWindow')">_</button>
-                <button class="btn-control" onclick="maximizeJendela('bukuBesarWindow')">⬜</button>
-                <button class="btn-control" onclick="tutupJendelaWindow('bukuBesarWindow')">X</button>
-            </div>
-        </div>
-        <div class="buku-besar-filter no-print">
-            <label>🔎 NOPOL:</label>
-            <input type="text" id="filterNopol" placeholder="Cth: B1234AB" oninput="filterBukuBesar()">
-            <label>📁 Mitra:</label>
-            <select id="filterMitra" onchange="filterBukuBesar()"><option value="">-- Semua --</option></select>
-            <label>📅 Periode:</label>
-            <select id="filterPeriode" onchange="filterBukuBesar()"><option value="">-- Semua --</option></select>
-            <button class="btn-win95" onclick="exportBukuBesarKeCSV()">📥 Export CSV</button>
-        </div>
-        <div class="buku-besar-container">
-            <table class="buku-besar-table"><thead><tr id="bukuBesarHeader"></tr></thead><tbody id="bukuBesarBody"></tbody></table>
-        </div>
-        <div class="buku-besar-summary">
-            <span>Total: <strong id="summaryBaris">0</strong> baris</span>
-            <span>Nominal: <strong id="summaryNominal">0</strong></span>
-        </div>
-    </div>
-
-    <!-- OCR IMPORT WINDOW -->
-    <div id="ocrWindow" class="win95-window" onclick="fokusKeJendela('ocrWindow')">
-        <div class="title-bar" style="background: linear-gradient(90deg, #004080, #1064a0);">
-            <div class="title-bar-text">📷 Import Data dari Gambar (OCR)</div>
-            <div class="title-bar-controls">
-                <button class="btn-control" onclick="minimizeJendela('ocrWindow')">_</button>
-                <button class="btn-control" onclick="maximizeJendela('ocrWindow')">⬜</button>
-                <button class="btn-control" onclick="tutupJendelaWindow('ocrWindow')">X</button>
-            </div>
-        </div>
-        <div class="ocr-container">
-            <h3 style="margin-top:0;">📷 Upload Gambar Screenshot Tabel</h3>
-            <div class="ocr-upload-area" id="ocrUploadArea" onclick="document.getElementById('ocrFileInput').click()">
-                <div style="font-size:32px; margin-bottom:8px;">📁</div>
-                <div style="font-weight:bold;">Klik atau drag-drop gambar di sini</div>
-                <div style="font-size:10px; color:#666;">Format: JPG, PNG (Ukuran: max 10MB)</div>
-            </div>
-            <input type="file" id="ocrFileInput" accept="image/*" style="display: none;" onchange="handleOCRFileSelect(event)">
-            <img id="ocrPreview" class="ocr-preview" style="display: none;">
-            <div id="ocrProgress" class="ocr-progress">Memproses OCR... <div id="ocrProgressText" style="font-size:10px;">0%</div></div>
-            <div id="ocrResult" class="ocr-result" style="display: none;"></div>
-            <div class="ocr-buttons">
-                <button class="btn-win95" onclick="importOCRDataToTable()" id="btnImportOCR" disabled>✅ Import ke Tabel</button>
-                <button class="btn-win95" onclick="resetOCR()">🔄 Reset</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- FILE SELECTOR MODAL untuk OCR -->
-    <div id="fileSelectorModal" class="file-selector-modal">
-        <div style="margin-bottom: 12px;"><strong>Pilih File Tujuan untuk Import Data OCR:</strong></div>
-        <select id="targetFileSelector" style="width: 100%; padding: 8px; border: 1px solid #808080;"></select>
-        <div style="display: flex; gap: 8px; margin-top: 12px; justify-content: flex-end;">
-            <button class="btn-win95" onclick="confirmOCRFileSelection()">✅ OK</button>
-            <button class="btn-win95" onclick="document.getElementById('fileSelectorModal').style.display='none';">❌ Batal</button>
-        </div>
-    </div>
 
 <script>
     // ================= WINDOWS BOX CONTROLLER SYSTEM =================
@@ -589,6 +510,7 @@
     function fokusKeJendela(windowId) {
         document.getElementById('mainExplorerWindow').style.zIndex = "10";
         document.getElementById('tableEditorWindow').style.zIndex = "10";
+        var _bb = document.getElementById('bukuBesarWindow'); if (_bb) _bb.style.zIndex = "10";
         document.getElementById(windowId).style.zIndex = "999";
     }
 
@@ -919,232 +841,55 @@
         updateNomorDanTotal(); rebuildFooter();
     }
 
-    // ================= BUKU BESAR FUNCTIONS =================
-    function bukaJendelaBukuBesar() { 
-        bukaJendelaWindow('bukuBesarWindow'); 
-        loadBukuBesar(); 
-    }
+    // =============== OCR FUNCTIONS ===============
+    window.ocrExtractedData = null;
+    window.selectedOCRFile = null;
 
-    function extractPeriodeFromFileName(fileName) {
-        let name = fileName.replace('.json', '');
-        return name.replace('_', ' ');
-    }
-
-    function getAllMitraAndPeriodeData() {
-        let allData = [];
-        let mitraSet = new Set();
-        let periodeSet = new Set();
-
-        for (let folderId in window.EXPLORER_DATA.folders) {
-            const folder = window.EXPLORER_DATA.folders[folderId];
-            if (folder.parent === "root") {
-                const mitraName = folder.name;
-                mitraSet.add(mitraName);
-
-                for (let fileId in window.EXPLORER_DATA.files) {
-                    const file = window.EXPLORER_DATA.files[fileId];
-                    if (file.folderId === folderId && file.content) {
-                        const periode = extractPeriodeFromFileName(file.name);
-                        periodeSet.add(periode);
-
-                        const columns = file.content.columns || [];
-                        const rows = file.content.rows || [];
-
-                        rows.forEach((rowData, idx) => {
-                            let rowObj = { mitra: mitraName, periode: periode, fileName: file.name, fileId: fileId, rowIndex: idx };
-                            columns.forEach((col, colIdx) => {
-                                rowObj[col.name.toLowerCase().replace(/\s+/g, '_')] = rowData[colIdx] || '';
-                                rowObj['_type_' + col.name.toLowerCase().replace(/\s+/g, '_')] = col.type;
-                            });
-                            allData.push(rowObj);
-                        });
-                    }
-                }
-            }
+    function bukaOCRUpload() {
+        if (!window.activeOpenedFileId) {
+            alert('Buka file tabel terlebih dahulu!');
+            return;
         }
-
-        return {
-            rows: allData,
-            mitras: Array.from(mitraSet).sort(),
-            periodes: Array.from(periodeSet).sort()
-        };
+        resetOCRModal();
+        document.getElementById('ocrModal').style.display = 'block';
     }
 
-    function loadBukuBesar() {
-        const data = getAllMitraAndPeriodeData();
-        
-        document.getElementById('filterMitra').innerHTML = '<option value="">-- Semua Mitra --</option>';
-        data.mitras.forEach(mitra => {
-            document.getElementById('filterMitra').innerHTML += `<option value="${mitra}">${mitra}</option>`;
-        });
-
-        document.getElementById('filterPeriode').innerHTML = '<option value="">-- Semua Periode --</option>';
-        data.periodes.forEach(periode => {
-            document.getElementById('filterPeriode').innerHTML += `<option value="${periode}">${periode}</option>`;
-        });
-
-        renderBukuBesar(data.rows);
+    function closeOCRModal() {
+        document.getElementById('ocrModal').style.display = 'none';
     }
 
-    function filterBukuBesar() {
-        const data = getAllMitraAndPeriodeData();
-        const filterNopol = (document.getElementById('filterNopol').value || '').toUpperCase();
-        const filterMitra = document.getElementById('filterMitra').value;
-        const filterPeriode = document.getElementById('filterPeriode').value;
-
-        let filtered = data.rows.filter(row => {
-            const nopol = (row.nopol || '').toUpperCase();
-            const matchNopol = filterNopol === '' || nopol.includes(filterNopol);
-            const matchMitra = filterMitra === '' || row.mitra === filterMitra;
-            const matchPeriode = filterPeriode === '' || row.periode === filterPeriode;
-            return matchNopol && matchMitra && matchPeriode;
-        });
-
-        renderBukuBesar(filtered);
+    function resetOCRModal() {
+        document.getElementById('ocrFileInput').value = '';
+        document.getElementById('ocrPreviewImg').style.display = 'none';
+        document.getElementById('ocrProgressDiv').style.display = 'none';
+        document.getElementById('ocrResultText').style.display = 'none';
+        document.getElementById('btnOCRImport').disabled = true;
+        window.ocrExtractedData = null;
     }
 
-    function renderBukuBesar(rows) {
-        const headerRow = document.getElementById('bukuBesarHeader');
-        const tableBody = document.getElementById('bukuBesarBody');
-
-        let allColumns = new Set(['MITRA', 'PERIODE', 'NOPOL']);
-        rows.forEach(row => {
-            Object.keys(row).forEach(key => {
-                if (!key.startsWith('_') && !['mitra', 'periode', 'filename', 'fileid', 'rowindex', 'nopol'].includes(key)) {
-                    allColumns.add(key.toUpperCase());
-                }
-            });
-        });
-
-        headerRow.innerHTML = '';
-        const columns = ['MITRA', 'PERIODE', 'NOPOL', ...Array.from(allColumns).filter(c => !['MITRA', 'PERIODE', 'NOPOL'].includes(c)).sort()];
-        
-        columns.forEach(col => {
-            const th = document.createElement('th');
-            th.textContent = col;
-            headerRow.appendChild(th);
-        });
-
-        tableBody.innerHTML = '';
-        if (rows.length === 0) {
-            tableBody.innerHTML = '<tr><td colspan="' + columns.length + '" style="text-align: center; padding: 20px;">Tidak ada data</td></tr>';
-        } else {
-            rows.forEach((row, idx) => {
-                const tr = document.createElement('tr');
-                columns.forEach(col => {
-                    const td = document.createElement('td');
-                    const colKey = col.toLowerCase().replace(/\s+/g, '_');
-                    let value = row[colKey] || '';
-
-                    if (col === 'MITRA') {
-                        td.className = 'col-mitra';
-                        td.textContent = value;
-                    } else if (col === 'PERIODE') {
-                        td.className = 'col-periode';
-                        td.textContent = value;
-                    } else if (col === 'NOPOL') {
-                        td.className = 'col-nopol';
-                        td.textContent = value;
-                    } else if (row['_type_' + colKey] === 'currency') {
-                        td.className = 'col-rupiah';
-                        td.textContent = value ? parseInt(value.replace(/\D/g, '')).toLocaleString('id-ID') : '0';
-                    } else {
-                        td.textContent = value;
-                    }
-
-                    tr.appendChild(td);
-                });
-                tableBody.appendChild(tr);
-            });
-        }
-
-        document.getElementById('summaryBaris').textContent = rows.length;
-        
-        let totalNominal = 0;
-        rows.forEach(row => {
-            const nominalRaw = (row.nominal || '').toString().replace(/\D/g, '');
-            totalNominal += parseInt(nominalRaw) || 0;
-        });
-        document.getElementById('summaryNominal').textContent = totalNominal.toLocaleString('id-ID');
-    }
-
-    function exportBukuBesarKeCSV() {
-        const data = getAllMitraAndPeriodeData();
-        const filterNopol = (document.getElementById('filterNopol').value || '').toUpperCase();
-        const filterMitra = document.getElementById('filterMitra').value;
-        const filterPeriode = document.getElementById('filterPeriode').value;
-
-        let filtered = data.rows.filter(row => {
-            const nopol = (row.nopol || '').toUpperCase();
-            const matchNopol = filterNopol === '' || nopol.includes(filterNopol);
-            const matchMitra = filterMitra === '' || row.mitra === filterMitra;
-            const matchPeriode = filterPeriode === '' || row.periode === filterPeriode;
-            return matchNopol && matchMitra && matchPeriode;
-        });
-
-        if (filtered.length === 0) { alert('Tidak ada data untuk diekspor'); return; }
-
-        let allColumns = new Set(['MITRA', 'PERIODE', 'NOPOL']);
-        filtered.forEach(row => {
-            Object.keys(row).forEach(key => {
-                if (!key.startsWith('_') && !['mitra', 'periode', 'filename', 'fileid', 'rowindex', 'nopol'].includes(key)) {
-                    allColumns.add(key.toUpperCase());
-                }
-            });
-        });
-
-        const columns = ['MITRA', 'PERIODE', 'NOPOL', ...Array.from(allColumns).filter(c => !['MITRA', 'PERIODE', 'NOPOL'].includes(c)).sort()];
-        
-        let csv = columns.join(',') + '\n';
-        filtered.forEach(row => {
-            const values = columns.map(col => {
-                const colKey = col.toLowerCase().replace(/\s+/g, '_');
-                return '"' + (row[colKey] || '').toString().replace(/"/g, '""') + '"';
-            });
-            csv += values.join(',') + '\n';
-        });
-
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement('a');
-        const url = URL.createObjectURL(blob);
-        link.setAttribute('href', url);
-        link.setAttribute('download', 'BukuBesar_' + new Date().toISOString().split('T')[0] + '.csv');
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    }
-
-    // ================= OCR FUNCTIONS =================
-    function bukaJendelaOCR() {
-        bukaJendelaWindow('ocrWindow');
-        resetOCR();
-    }
-
-    async function handleOCRFileSelect(event) {
+    async function handleOCRFile(event) {
         const file = event.target.files[0];
         if (!file) return;
 
         const reader = new FileReader();
         reader.onload = async (e) => {
             const imageData = e.target.result;
-            document.getElementById('ocrPreview').src = imageData;
-            document.getElementById('ocrPreview').style.display = 'block';
-
-            // Check if Tesseract is available
+            document.getElementById('ocrPreviewImg').src = imageData;
+            document.getElementById('ocrPreviewImg').style.display = 'block';
+            
             if (typeof Tesseract === 'undefined') {
-                alert('OCR library sedang dimuat... Coba lagi dalam beberapa detik');
+                alert('OCR library masih dimuat... Coba lagi dalam beberapa detik');
                 return;
             }
-
+            
             await runOCR(imageData);
         };
         reader.readAsDataURL(file);
     }
 
     async function runOCR(imageData) {
-        const progressDiv = document.getElementById('ocrProgress');
-        const progressText = document.getElementById('ocrProgressText');
+        const progressDiv = document.getElementById('ocrProgressDiv');
+        const progressPercent = document.getElementById('ocrProgressPercent');
         progressDiv.style.display = 'block';
 
         try {
@@ -1152,19 +897,17 @@
                 logger: (m) => {
                     if (m.status === 'recognizing') {
                         const progress = Math.round(m.progress * 100);
-                        progressText.innerText = progress + '%';
+                        progressPercent.innerText = progress + '%';
                     }
                 }
             });
 
             const text = result.data.text;
-            window.ocrExtractedData = parseOCRToTableData(text);
+            window.ocrExtractedData = parseOCRText(text);
 
-            const resultDiv = document.getElementById('ocrResult');
-            resultDiv.innerText = text;
-            resultDiv.style.display = 'block';
-
-            document.getElementById('btnImportOCR').disabled = false;
+            document.getElementById('ocrResultText').value = text;
+            document.getElementById('ocrResultText').style.display = 'block';
+            document.getElementById('btnOCRImport').disabled = false;
             progressDiv.style.display = 'none';
         } catch (error) {
             alert('Error OCR: ' + error.message);
@@ -1172,10 +915,10 @@
         }
     }
 
-    function parseOCRToTableData(text) {
+    function parseOCRText(text) {
         const lines = text.split('\n').filter(l => l.trim());
         const rows = [];
-
+        
         lines.forEach((line, idx) => {
             if (idx === 0) return;
             const cells = line.split(/\s{2,}|\t/).map(c => c.trim()).filter(c => c);
@@ -1183,60 +926,23 @@
                 rows.push(cells);
             }
         });
-
+        
         return rows;
     }
 
-    function importOCRDataToTable() {
-        if (!window.ocrExtractedData) {
-            alert('Tidak ada data OCR yang tersedia');
+    function importOCRToTable() {
+        if (!window.ocrExtractedData || window.ocrExtractedData.length === 0) {
+            alert('Tidak ada data OCR yang valid');
             return;
         }
 
-        // Show file selector modal
-        showFileSelectorModal();
-    }
-
-    function showFileSelectorModal() {
-        const selector = document.getElementById('targetFileSelector');
-        selector.innerHTML = '';
-
-        for (let fileId in window.EXPLORER_DATA.files) {
-            const file = window.EXPLORER_DATA.files[fileId];
-            const option = document.createElement('option');
-            option.value = fileId;
-            option.textContent = file.name;
-            selector.appendChild(option);
-        }
-
-        if (selector.options.length === 0) {
-            alert('Tidak ada file tabel. Buat file tabel terlebih dahulu!');
-            return;
-        }
-
-        document.getElementById('fileSelectorModal').style.display = 'block';
-    }
-
-    function confirmOCRFileSelection() {
-        const fileId = document.getElementById('targetFileSelector').value;
-        if (!fileId) {
-            alert('Pilih file terlebih dahulu!');
-            return;
-        }
-
-        window.activeOpenedFileId = fileId;
-        const file = window.EXPLORER_DATA.files[fileId];
-        document.getElementById('editorFileName').innerText = `📄 Dokumen: [ ${file.name} ]`;
-        bukaJendelaWindow('tableEditorWindow');
-        muatUlangTabelDariJSON(file.content);
-
-        // Add OCR data to table
         const tbody = document.getElementById('tableBody');
         const headerRow = document.getElementById('headerRow');
         const columnCount = headerRow.cells.length - 2;
 
         window.ocrExtractedData.forEach(rowData => {
             const newRow = tbody.insertRow(-1);
+            
             const cellNo = newRow.insertCell(0);
             cellNo.className = 'text-center row-number';
             cellNo.innerText = tbody.rows.length;
@@ -1257,19 +963,325 @@
         hitungTotalMataUangDanNomor();
         triggerTableAutoSave();
 
-        // Close modal dan OCR window
-        document.getElementById('fileSelectorModal').style.display = 'none';
-        setTimeout(() => { tutupJendelaWindow('ocrWindow'); }, 500);
+        alert('✅ ' + window.ocrExtractedData.length + ' baris data berhasil diimpor!');
+        closeOCRModal();
     }
 
-    function resetOCR() {
-        document.getElementById('ocrFileInput').value = '';
-        document.getElementById('ocrPreview').style.display = 'none';
-        document.getElementById('ocrProgress').style.display = 'none';
-        document.getElementById('ocrResult').style.display = 'none';
-        document.getElementById('btnImportOCR').disabled = true;
-        window.ocrExtractedData = null;
+    function closeFileSelector() {
+        document.getElementById('fileSelectorModal').style.display = 'none';
+    }
+
+    function confirmFileSelection() {
+        closeFileSelector();
+    }
+
+    // ================= TAMBAHAN: BUKU BESAR =================
+    window.BB_CACHE = null;
+
+    function bukaBukuBesar() {
+        bukaJendelaWindow('bukuBesarWindow');
+        bbRefresh();
+    }
+
+    function bbRefresh() {
+        window.BB_CACHE = bbKumpulkanData();
+        bbIsiDropdown();
+        bbRender();
+    }
+
+    function bbPeriodeDariNamaFile(namaFile) {
+        return namaFile.replace(/\.json$/i, '').replace(/_/g, ' ');
+    }
+
+    function bbFolderTeratas(folderId) {
+        var cur = folderId;
+        var guard = 0;
+        while (cur && cur !== "root" && window.EXPLORER_DATA.folders[cur] && guard < 50) {
+            if (window.EXPLORER_DATA.folders[cur].parent === "root") {
+                return window.EXPLORER_DATA.folders[cur].name;
+            }
+            cur = window.EXPLORER_DATA.folders[cur].parent;
+            guard++;
+        }
+        return "(Root)";
+    }
+
+    function bbKumpulkanData() {
+        var baris = [];
+        var kolomSet = [];
+        var mitraSet = {};
+        var fileSet = {};
+
+        for (var fileId in window.EXPLORER_DATA.files) {
+            var file = window.EXPLORER_DATA.files[fileId];
+            if (!file || !file.content) continue;
+
+            var mitra = bbFolderTeratas(file.folderId);
+            var periode = bbPeriodeDariNamaFile(file.name || '');
+            mitraSet[mitra] = true;
+            fileSet[fileId] = true;
+
+            var cols = file.content.columns || [];
+            var rows = file.content.rows || [];
+
+            cols.forEach(function(c) {
+                var nama = (c.name || '').trim().toUpperCase();
+                if (nama && kolomSet.indexOf(nama) === -1) kolomSet.push(nama);
+            });
+
+            rows.forEach(function(rowData) {
+                var obj = { __mitra: mitra, __periode: periode, __file: file.name, __data: {}, __tipe: {} };
+                cols.forEach(function(c, i) {
+                    var nama = (c.name || '').trim().toUpperCase();
+                    if (!nama) return;
+                    obj.__data[nama] = (rowData && rowData[i] != null) ? rowData[i] : '';
+                    obj.__tipe[nama] = c.type;
+                });
+                baris.push(obj);
+            });
+        }
+
+        // Deteksi duplikat NOPOL (kolom yang mengandung kata POLISI atau NOPOL)
+        var kolomNopol = null;
+        for (var k = 0; k < kolomSet.length; k++) {
+            if (kolomSet[k].indexOf('POLISI') !== -1 || kolomSet[k].indexOf('NOPOL') !== -1) { kolomNopol = kolomSet[k]; break; }
+        }
+        if (kolomNopol) {
+            var hitung = {};
+            baris.forEach(function(b) {
+                var v = (b.__data[kolomNopol] || '').toString().trim().toUpperCase();
+                if (v) hitung[v] = (hitung[v] || 0) + 1;
+            });
+            baris.forEach(function(b) {
+                var v = (b.__data[kolomNopol] || '').toString().trim().toUpperCase();
+                b.__duplikat = !!(v && hitung[v] > 1);
+            });
+        }
+
+        return {
+            baris: baris,
+            kolom: kolomSet,
+            kolomNopol: kolomNopol,
+            mitras: Object.keys(mitraSet).sort(),
+            jumlahFile: Object.keys(fileSet).length
+        };
+    }
+
+    function bbIsiDropdown() {
+        var d = window.BB_CACHE;
+        var selMitra = document.getElementById('bbMitra');
+        var selPeriode = document.getElementById('bbPeriode');
+        var mitraLama = selMitra.value;
+        var periodeLama = selPeriode.value;
+
+        selMitra.innerHTML = '<option value="">Semua</option>';
+        d.mitras.forEach(function(m) {
+            selMitra.innerHTML += '<option value="' + m + '">' + m + '</option>';
+        });
+
+        var periodeSet = {};
+        d.baris.forEach(function(b) { periodeSet[b.__periode] = true; });
+        selPeriode.innerHTML = '<option value="">Semua</option>';
+        Object.keys(periodeSet).sort().forEach(function(p) {
+            selPeriode.innerHTML += '<option value="' + p + '">' + p + '</option>';
+        });
+
+        if (mitraLama) selMitra.value = mitraLama;
+        if (periodeLama) selPeriode.value = periodeLama;
+    }
+
+    function bbBarisTersaring() {
+        var d = window.BB_CACHE;
+        if (!d) return [];
+        var cari = (document.getElementById('bbSearch').value || '').trim().toUpperCase();
+        var fMitra = document.getElementById('bbMitra').value;
+        var fPeriode = document.getElementById('bbPeriode').value;
+
+        return d.baris.filter(function(b) {
+            if (fMitra && b.__mitra !== fMitra) return false;
+            if (fPeriode && b.__periode !== fPeriode) return false;
+            if (cari) {
+                var gabung = (b.__mitra + ' ' + b.__periode + ' ' + Object.keys(b.__data).map(function(k) { return b.__data[k]; }).join(' ')).toUpperCase();
+                if (gabung.indexOf(cari) === -1) return false;
+            }
+            return true;
+        });
+    }
+
+    function bbRender() {
+        var d = window.BB_CACHE;
+        if (!d) return;
+        var rows = bbBarisTersaring();
+        rows = bbSaringMasalah(rows);
+        var kolom = d.kolom;
+
+        var head = document.getElementById('bbHead');
+        head.innerHTML = '<th>MITRA</th><th>PERIODE</th>' + kolom.map(function(k) { return '<th>' + k + '</th>'; }).join('');
+
+        var body = document.getElementById('bbBody');
+        if (rows.length === 0) {
+            body.innerHTML = '<tr><td colspan="' + (kolom.length + 2) + '" style="text-align:center; padding:20px; color:#666;">Tidak ada data</td></tr>';
+        } else {
+            var html = '';
+            rows.forEach(function(b) {
+                var _cls = b.__duplikat ? ' class="bb-dup"' : (bbMasalahBaris(b).length ? ' class="bb-warn"' : '');
+                html += '<tr' + _cls + '>';
+                html += '<td class="bb-mitra">' + b.__mitra + '</td>';
+                html += '<td class="bb-periode">' + b.__periode + '</td>';
+                kolom.forEach(function(k) {
+                    var v = b.__data[k];
+                    if (v === undefined || v === null) v = '';
+                    var tipe = b.__tipe[k];
+                    var cls = '';
+                    if (tipe === 'currency' || tipe === 'number') cls = ' class="bb-num"';
+                    else if (k.indexOf('POLISI') !== -1 || k.indexOf('NOPOL') !== -1) cls = ' class="bb-nopol"';
+                    html += '<td' + cls + '>' + String(v).replace(/</g, '&lt;') + '</td>';
+                });
+                html += '</tr>';
+            });
+            body.innerHTML = html;
+        }
+
+        // Dashboard cards
+        var mitraTampil = {};
+        var fileTampil = {};
+        var totalNominal = 0;
+        var lunas = 0, belum = 0;
+
+        rows.forEach(function(b) {
+            mitraTampil[b.__mitra] = true;
+            fileTampil[b.__file] = true;
+            for (var k in b.__data) {
+                if (b.__tipe[k] === 'currency') {
+                    totalNominal += parseInt(String(b.__data[k]).replace(/\D/g, ''), 10) || 0;
+                }
+                if (b.__tipe[k] === 'status') {
+                    if (b.__data[k] === 'LUNAS') lunas++;
+                    else belum++;
+                }
+            }
+        });
+
+        document.getElementById('bbCardBaris').innerText = rows.length;
+        document.getElementById('bbCardMitra').innerText = Object.keys(mitraTampil).length;
+        document.getElementById('bbCardFile').innerText = Object.keys(fileTampil).length;
+        document.getElementById('bbCardNominal').innerText = totalNominal.toLocaleString('id-ID');
+        document.getElementById('bbCardStatus').innerText = lunas + ' / ' + belum;
+
+        var jmlDup = rows.filter(function(b) { return b.__duplikat; }).length;
+        document.getElementById('bbStatus').innerText = jmlDup > 0
+            ? '⚠️ ' + jmlDup + ' baris ber-NOPOL duplikat (ditandai merah)'
+            : '✅ Tidak ada NOPOL duplikat pada data yang tampil';
+    }
+
+    function bbExportCSV() {
+        var d = window.BB_CACHE;
+        if (!d) return;
+        var rows = bbBarisTersaring();
+        if (rows.length === 0) { alert('Tidak ada data untuk diekspor.'); return; }
+
+        var kolom = d.kolom;
+        var esc = function(v) { return '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"'; };
+
+        var csv = ['MITRA', 'PERIODE'].concat(kolom).map(esc).join(',') + '\n';
+        rows.forEach(function(b) {
+            var line = [esc(b.__mitra), esc(b.__periode)];
+            kolom.forEach(function(k) { line.push(esc(b.__data[k])); });
+            csv += line.join(',') + '\n';
+        });
+
+        var blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+        var link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'BukuBesar_' + new Date().toISOString().split('T')[0] + '.csv';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     }
 </script>
+    <!-- ===== TAMBAHAN: JENDELA BUKU BESAR ===== -->
+    <div id="bukuBesarWindow" class="win95-window" onclick="fokusKeJendela('bukuBesarWindow')">
+        <div class="title-bar" style="background: linear-gradient(90deg, #004080, #1064a0);">
+            <div class="title-bar-text">📊 Buku Besar - Rekap Seluruh Mitra</div>
+            <div class="title-bar-controls">
+                <button class="btn-control" onclick="minimizeJendela('bukuBesarWindow')">_</button>
+                <button class="btn-control" onclick="maximizeJendela('bukuBesarWindow')">⬜</button>
+                <button class="btn-control" onclick="tutupJendelaWindow('bukuBesarWindow')">X</button>
+            </div>
+        </div>
+
+        <div class="bb-toolbar no-print">
+            <input type="text" id="bbSearch" placeholder="🔍 Cari apa saja (nopol, nama, kontrak)..." oninput="bbRender()" style="flex-grow:1; min-width:150px;">
+            <label>Mitra:</label>
+            <select id="bbMitra" onchange="bbRender()"><option value="">Semua</option></select>
+            <label>Periode:</label>
+            <select id="bbPeriode" onchange="bbRender()"><option value="">Semua</option></select>
+            <button class="btn-win95" onclick="bbRefresh()">🔄 Muat Ulang</button>
+            <button class="btn-win95" id="bbBtnMasalah" onclick="bbToggleMasalah()">⚠️ Hanya Bermasalah</button>
+            <button class="btn-win95" onclick="bbExportCSV()" style="background:#28a745; color:#fff; font-weight:bold;">📥 Export CSV</button>
+            <button class="btn-win95" onclick="bbBackupJSON()" style="background:#0d6efd; color:#fff; font-weight:bold;">💾 Backup</button>
+            <button class="btn-win95" onclick="document.getElementById('bbRestoreInput').click()">♻️ Restore</button>
+            <input type="file" id="bbRestoreInput" accept="application/json,.json" style="display:none;" onchange="bbRestoreJSON(event)">
+        </div>
+
+        <div class="bb-cards">
+            <div class="bb-card"><div class="lbl">Baris Tampil</div><div class="val" id="bbCardBaris">0</div></div>
+            <div class="bb-card"><div class="lbl">Mitra</div><div class="val" id="bbCardMitra">0</div></div>
+            <div class="bb-card"><div class="lbl">File / Periode</div><div class="val" id="bbCardFile">0</div></div>
+            <div class="bb-card"><div class="lbl">Total Nominal</div><div class="val" id="bbCardNominal">0</div></div>
+            <div class="bb-card"><div class="lbl">Lunas / Belum</div><div class="val" id="bbCardStatus">-</div></div>
+        </div>
+
+        <div class="bb-scroll">
+            <table class="bb-table">
+                <thead><tr id="bbHead"></tr></thead>
+                <tbody id="bbBody"></tbody>
+            </table>
+        </div>
+
+        <div class="status-bar no-print">
+            <div class="status-field" id="bbStatus" style="flex-grow:2;">Siap</div>
+        </div>
+    </div>
+
+    <!-- OCR Upload Modal -->
+    <div id="ocrModal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:#d4d0c8; border:2px solid #808080; padding:20px; z-index:10000; min-width:350px; border-radius:4px; box-shadow:0 0 15px rgba(0,0,0,0.5);">
+        <div style="font-weight:bold; margin-bottom:12px; font-size:12px;">📷 Upload Gambar Tabel (Screenshot)</div>
+        
+        <div id="ocrUploadBox" style="padding:20px; border:2px dashed #004080; background:#f0f8ff; text-align:center; cursor:pointer; border-radius:4px; margin-bottom:12px;" onclick="document.getElementById('ocrFileInput').click();">
+            <div style="font-size:28px; margin-bottom:8px;">📁</div>
+            <div style="font-size:11px; font-weight:bold;">Klik atau drag-drop gambar di sini</div>
+            <div style="font-size:10px; color:#666; margin-top:4px;">Format: JPG, PNG (Max 10MB)</div>
+        </div>
+
+        <input type="file" id="ocrFileInput" accept="image/*" style="display:none;" onchange="handleOCRFile(event)">
+
+        <img id="ocrPreviewImg" style="display:none; max-width:100%; max-height:200px; border:1px solid #c0c0c0; margin:8px 0;">
+        
+        <div id="ocrProgressDiv" style="display:none; margin:8px 0; font-size:10px;">
+            <div>Memproses OCR... Tunggu sebentar</div>
+            <div id="ocrProgressPercent" style="margin-top:4px; color:#666;">0%</div>
+        </div>
+
+        <textarea id="ocrResultText" style="display:none; width:100%; height:120px; padding:8px; border:1px solid #c0c0c0; font-family:monospace; font-size:10px; margin:8px 0; resize:vertical;"></textarea>
+
+        <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:12px;">
+            <button class="btn-win95" onclick="importOCRToTable()" id="btnOCRImport" disabled>✅ Import ke Tabel</button>
+            <button class="btn-win95" onclick="resetOCRModal()">🔄 Reset</button>
+            <button class="btn-win95" onclick="closeOCRModal()">❌ Tutup</button>
+        </div>
+    </div>
+
+    <!-- File Selector Modal for OCR -->
+    <div id="fileSelectorModal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:#d4d0c8; border:2px solid #808080; padding:20px; z-index:10001; min-width:300px; border-radius:4px; box-shadow:0 0 15px rgba(0,0,0,0.5);">
+        <div style="font-weight:bold; margin-bottom:12px; font-size:12px;">📄 Pilih File Tujuan</div>
+        <select id="targetFileSelect" style="width:100%; padding:8px; border:1px solid #808080; font-size:11px; margin-bottom:12px;">
+        </select>
+        <div style="display:flex; gap:8px; justify-content:flex-end;">
+            <button class="btn-win95" onclick="confirmFileSelection()">✅ OK</button>
+            <button class="btn-win95" onclick="closeFileSelector()">❌ Batal</button>
+        </div>
+    </div>
+
 </body>
 </html>
